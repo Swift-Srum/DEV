@@ -1,3 +1,5 @@
+
+
 -- Drop existing tables if needed
 DROP TABLE IF EXISTS `active_bowser`;
 DROP TABLE IF EXISTS `maintain_bowser`;
@@ -7,7 +9,7 @@ DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `area_reports`;
 DROP TABLE IF EXISTS `bowser_reports`;
 
--- Create USERS Table
+-- Create USERS Table (Corrected with userType)
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` text NOT NULL,
@@ -16,6 +18,7 @@ CREATE TABLE `users` (
   `sessionKey` text NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `admin` tinyint(1) NOT NULL DEFAULT 0,
+  `userType` enum('public', 'admin', 'maintainer', 'dispatcher', 'driver') NOT NULL DEFAULT 'public',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -99,6 +102,5 @@ CREATE TABLE `active_bowser` (
   FOREIGN KEY (`bowserId`) REFERENCES `bowsers`(`id`),
   FOREIGN KEY (`userId`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 
 
