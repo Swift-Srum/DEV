@@ -1,62 +1,63 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	background-image: url("/assets/back.jpg");
-
-    background-size: cover; /* or use 'contain' based on your preference */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
-    background-attachment: fixed; /* Keeps the background fixed during scrolling */
+    background-image: url("/assets/back.jpg");
+    background-size: cover; 
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     background-color: #101210;
     margin: 0;
     padding: 0;
-    color: #ffffff; /* Dark gray text color */
+    color: #ffffff;
 }
 
 button {
-    background-color: #007bff; /* Purple button background */
+    background-color: #007bff;
     width: 100%;
-    color: #ffffff; /* White text color */
+    color: #ffffff;
     padding: 15px;
     margin: 10px 0;
     border: none;
     cursor: pointer;
-    border-radius: 5px; /* Add border-radius for a softer button appearance */
+    border-radius: 5px;
 }
 
 label {
-  white-space: pre-wrap;
+    white-space: pre-wrap;
 }
 
 form {
-    border: 3px solid #007bff; /* Purple border */
+    border: 3px solid #007bff;
     max-width: 400px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #101210; /* White background */
-    border-radius: 10px; /* Add border-radius for a softer form appearance */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow for depth */
+    background-color: #101210;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* ✅ Fixed here: input[type=text], input[type=password], input[type=email] */
 input[type=text],
-input[type=password] {
+input[type=password],
+input[type=email] {
     width: 100%;
     margin: 8px 0;
-    padding: 12px 15px; /* Adjusted padding for a more compact look */
+    padding: 12px 15px;
     display: inline-block;
-    border: 2px solid #003366; /* Dark blue border */
+    border: 2px solid #003366;
     box-sizing: border-box;
     border-radius: 5px;
 }
 
 button:hover {
-    opacity: 0.8; /* Slightly increase opacity on hover */
+    opacity: 0.8;
 }
 
 textarea {
     width: 100%;
     margin: 8px 0;
-    padding: 12px 15px; /* Adjusted padding for a more compact look */
+    padding: 12px 15px;
     display: inline-block;
-    border: 2px solid #007bff; /* Purple border */
+    border: 2px solid #007bff;
     box-sizing: border-box;
     border-radius: 5px;
 }
@@ -65,18 +66,17 @@ textarea {
     width: auto;
     padding: 10px 18px;
     margin: 10px 5px;
-    background-color: #007bff; /* Dark purple cancel button */
+    background-color: #007bff;
     border-radius: 5px;
 }
 
 .container {
     padding: 25px;
-    background-color: #101210; /* Light gray background */
+    background-color: #101210;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Media query for screens with a maximum width of 600 pixels (typical for mobile devices) */
 @media only screen and (max-width: 600px) {
     form {
         max-width: 100%;
