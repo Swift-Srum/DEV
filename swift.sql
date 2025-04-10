@@ -1,5 +1,3 @@
-
-
 -- Drop existing tables if needed
 DROP TABLE IF EXISTS `active_bowser`;
 DROP TABLE IF EXISTS `maintain_bowser`;
@@ -9,7 +7,7 @@ DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `area_reports`;
 DROP TABLE IF EXISTS `bowser_reports`;
 
--- Create USERS Table (Corrected with userType)
+-- USERS TABLE
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` text NOT NULL,
@@ -22,10 +20,11 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Create BOWSERS Table
+-- BOWSERS TABLE (corrected with name, longitude, latitude, postcode)
 CREATE TABLE `bowsers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ownerId` int(11) NOT NULL,
+  `name` text NOT NULL,
   `manufacturer_details` text NOT NULL,
   `model` text NOT NULL,
   `serial_number` text NOT NULL,
@@ -41,19 +40,22 @@ CREATE TABLE `bowsers` (
   `date_returned` text NOT NULL,
   `eastings` int(11) NOT NULL DEFAULT 0,
   `northings` int(11) NOT NULL DEFAULT 0,
+  `longitude` text NOT NULL,
+  `latitude` text NOT NULL,
+  `postcode` text NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`ownerId`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Create UPLOADS Table
+-- UPLOADS TABLE
 CREATE TABLE `uploads` (
   `fileName` text NOT NULL,
   `bowserId` int(11) NOT NULL,
   FOREIGN KEY (`bowserId`) REFERENCES `bowsers`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Create AREA_REPORTS Table
+-- AREA_REPORTS TABLE
 CREATE TABLE `area_reports` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `report` text NOT NULL,
@@ -64,7 +66,7 @@ CREATE TABLE `area_reports` (
   FOREIGN KEY (`userId`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Create BOWSER_REPORTS Table
+-- BOWSER_REPORTS TABLE
 CREATE TABLE `bowser_reports` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
@@ -76,7 +78,7 @@ CREATE TABLE `bowser_reports` (
   FOREIGN KEY (`bowserId`) REFERENCES `bowsers`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Create MAINTAIN_BOWSER Table
+-- MAINTAIN_BOWSER TABLE
 CREATE TABLE `maintain_bowser` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `bowserId` int(11) NOT NULL,
@@ -90,7 +92,7 @@ CREATE TABLE `maintain_bowser` (
   FOREIGN KEY (`userId`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Create ACTIVE_BOWSER Table
+-- ACTIVE_BOWSER TABLE
 CREATE TABLE `active_bowser` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `bowserId` int(11) NOT NULL,
@@ -102,5 +104,4 @@ CREATE TABLE `active_bowser` (
   FOREIGN KEY (`bowserId`) REFERENCES `bowsers`(`id`),
   FOREIGN KEY (`userId`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 
