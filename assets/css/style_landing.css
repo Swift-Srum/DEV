@@ -1,0 +1,129 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    text-align: center;
+}
+
+header {
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.report-btn, .search-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.report-btn:hover, .search-btn:hover {
+    background-color: #0056b3;
+}
+
+.search-section {
+    background: #fff;
+    padding: 20px;
+    margin: 20px auto;
+    width: 80%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 60%;
+}
+
+.main-image img {
+    width: 80%;
+    margin: 20px 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bowser-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    width: 80%;
+    margin: auto;
+}
+
+.summary-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.summary-card img {
+    width: 100%;
+    border-radius: 5px;
+}
+
+.top-right-btn {
+    position: fixed; /* Fix the position relative to the browser window */
+    top: 20px; /* Adjust the top distance */
+    right: 20px; /* Adjust the right distance */
+    background-color: #007bff; /* Button color */
+    color: #fff; /* Text color */
+    padding: 10px 20px; /* Padding inside the button */
+    border-radius: 5px; /* Rounded corners */
+    text-decoration: none; /* Remove underline */
+    font-size: 16px; /* Font size */
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.top-right-btn:hover {
+    background-color: #3700b3; /* Darker color on hover */
+}
+
+.responsive-img {
+    max-width: 300px; /* Set a maximum width */
+    max-height: 300px; /* Set a maximum height */
+    width: auto; /* Maintain aspect ratio */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Remove space below the image */
+    margin: 0 auto; /* Optional: Center the image if needed */
+}
+
+#map {
+    position: relative; /* Ensures positioning is relative to the map container */
+}
+
+.view-bowser-btn {
+    position: absolute;
+    bottom: 20px; /* Places the button at the bottom of the map container */
+    left: 50%; /* Centers the button horizontally */
+    transform: translateX(-50%); /* Centers the button perfectly */
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000; /* Ensures it appears above the map content */
+}
+
+.view-bowser-btn:hover {
+    background-color: #0056b3;
+}
+
+
