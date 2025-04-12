@@ -72,7 +72,15 @@ if(isset($_POST['userID']) && isset($_POST['password']) && isset($_POST['confirm
     $username = $_POST['userID'];
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirmPassword'];
-    $email = $_POST['email'];
+	
+	$email = trim($_POST['email']);
+
+	if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+		die("responseCode=4&message=Invalid email.");
+	}
+
+
+
     
     // Checking if passwords match
     if($password != $confirmPassword) {

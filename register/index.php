@@ -39,9 +39,10 @@ $err = $aes->decrypt($err, "secretkey");
       <button type="button" onclick="register();">Register</button>
       <a href="/login"><button type="button" class="cancelbtn">Login</button></a>
       <a href="/"><button type="button" class="cancelbtn">Cancel</button></a> 
-      <center><h1><?php echo $err ?></h1></center>
+	  
     </div>   
-  </form>     
+  </form> 
+<center><h1><?php echo $err ?></h1></center>  
 </div>
     <div class="right-column">
       <img src="/assets/back.jpg" style="width:256px;height:256px;">
