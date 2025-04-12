@@ -18,6 +18,8 @@ $err = $aes->decrypt($err, "secretkey");
 </head>    
 
 <body>    
+<div id = "main">
+<div class="left-column">
   <center><h1>Registration Form</h1></center>   
 
   <form>  
@@ -35,11 +37,17 @@ $err = $aes->decrypt($err, "secretkey");
       <input type="password" id="confirmPassword" placeholder="Re-enter Password" name="confirmPassword" required>
 
       <button type="button" onclick="register();">Register</button>
+      <a href="/login"><button type="button" class="cancelbtn">Login</button></a>
       <a href="/"><button type="button" class="cancelbtn">Cancel</button></a> 
+      <center><h1><?php echo $err ?></h1></center>
     </div>   
   </form>     
-
-  <center><h1><?php echo $err ?></h1></center>
+</div>
+    <div class="right-column">
+      <img src="/assets/back.jpg" style="width:256px;height:256px;">
+</div>
+</div>
+  
 
   <script>
   function register() {
