@@ -16,6 +16,8 @@ $err = $aes->decrypt($err, "secretkey");
 <link rel="stylesheet" href="/assets/css/style_form.css">  
 </head>    
 <body>    
+  <div id = "main">
+    <div class="left-column">
     <center> <h1> Login Form </h1> </center>   
     <form>  
         <div class="container">   
@@ -29,6 +31,11 @@ $err = $aes->decrypt($err, "secretkey");
         </div>  	
     </form>   
 	<center> <h1> <?php echo $err ?> </h1> </center> 
+	</div>
+    <div class="right-column">
+      <img src="/assets/back.jpg" style="width:256px;height:256px;">
+</div>
+</div>
 
 
   <script>
