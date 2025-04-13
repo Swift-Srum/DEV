@@ -86,22 +86,26 @@ textarea {
 #main { 
   width: 100%; 
   height: 100vh; 
-  display: flex; /* Flexbox to split into two columns */
-  align-items: center; /* Center content vertically */
-  justify-content: space-between; /* Push left and right columns to edges */
-  padding: 0 5%; /* Optional: add some padding if you don't want stuff touching edges */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.left-column { 
-  width: 50%; 
+.left-column, .right-column {
+  width: 50%;
+  height: 100vh;
   display: flex;
-  justify-content: center; /* Center content horizontally inside the column */
-  align-items: center; /* Center content vertically inside the column */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
 }
 
-.right-column { 
-  width: 50%; 
-  display: flex;
-  justify-content: center; /* Center the image horizontally */
-  align-items: center; /* Center the image vertically */
+.left-column h1 {
+  margin-bottom: 20px;
+}
+
+.right-column img {
+  max-width: 80%;  /* <-- image won't fill full side, stays nice and big */
+  height: auto;
 }
