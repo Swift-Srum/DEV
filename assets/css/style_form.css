@@ -106,6 +106,6 @@ textarea {
 }
 
 .right-column img {
-  max-width: 80%;  /* <-- image won't fill full side, stays nice and big */
+  max-width: 160%;
   height: auto;
 }
