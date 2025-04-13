@@ -88,11 +88,18 @@ textarea {
 	height:100vh; 
 } 
 .left-column{ 
-	float:left; 
-	width: 50% /*if you want to split exactly half of the page */
+    flex: 1; /* Take up 50% of the width */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 } 
 .right-column{ 
-	float:right; 
-	width: 50% /*if you want to split exactly half of the page */
+    flex: 1; /* Take up 50% of the width */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f4f4; /* Optional background color */
     
 } 
+
