@@ -45,7 +45,7 @@ $err = $aes->decrypt($err, "secretkey");
 <center><h1><?php echo $err ?></h1></center>  
 </div>
     <div class="right-column">
-      <img src="/assets/back.jpg" style="width:256px;height:256px;">
+      <img src="/assets/back1.jpg" style="width:256px;height:256px;">
 </div>
 </div>
   
