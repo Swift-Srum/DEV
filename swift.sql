@@ -1,4 +1,3 @@
--- Drop existing tables if needed
 DROP TABLE IF EXISTS `active_bowser`;
 DROP TABLE IF EXISTS `maintain_bowser`;
 DROP TABLE IF EXISTS `uploads`;
@@ -20,7 +19,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- BOWSERS TABLE (corrected with name, longitude, latitude, postcode)
+-- BOWSERS TABLE
 CREATE TABLE `bowsers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ownerId` int(11) NOT NULL,
@@ -55,24 +54,24 @@ CREATE TABLE `uploads` (
   FOREIGN KEY (`bowserId`) REFERENCES `bowsers`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- AREA_REPORTS TABLE
+-- AREA_REPORTS TABLE (with updated reportType for urgency levels)
 CREATE TABLE `area_reports` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `report` text NOT NULL,
   `postcode` text NOT NULL,
-  `reportType` text NOT NULL,
+  `reportType` ENUM('Urgent', 'Medium', 'Low') NOT NULL DEFAULT 'Medium',  -- Updated column for urgency
   `userId` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`userId`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- BOWSER_REPORTS TABLE
+-- BOWSER_REPORTS TABLE (with updated typeOfReport for urgency levels)
 CREATE TABLE `bowser_reports` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userId` int(11) NOT NULL,
   `bowserId` int(11) NOT NULL,
   `report` text NOT NULL,
-  `typeOfReport` text NOT NULL,
+  `typeOfReport` ENUM('Urgent', 'Medium', 'Low') NOT NULL DEFAULT 'Medium',  -- Updated column for urgency
   PRIMARY KEY (`id`),
   FOREIGN KEY (`userId`) REFERENCES `users`(`id`),
   FOREIGN KEY (`bowserId`) REFERENCES `bowsers`(`id`)
@@ -104,4 +103,3 @@ CREATE TABLE `active_bowser` (
   FOREIGN KEY (`bowserId`) REFERENCES `bowsers`(`id`),
   FOREIGN KEY (`userId`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
