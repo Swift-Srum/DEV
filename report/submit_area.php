@@ -1,5 +1,7 @@
 <?php
-include('../essential/internal.php');
+// Include config file first
+require_once('../essential/config.php');
+include('../essential/backbone.php');
 
 // Check if user is logged in
 if (!isset($_COOKIE['user_name']) || !isset($_COOKIE['sessionId'])) {
