@@ -63,7 +63,7 @@ if ($id == null)
 <body>    
     <div class="container">
         <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
-            <div class="alert-success">
+            <div class="success-message">
                 Report submitted successfully!
             </div>
         <?php endif; ?>
