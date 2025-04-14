@@ -21,12 +21,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $report = trim(strip_tags($_POST['report'] ?? ''));
         $typeOfReport = $_POST['typeOfReport'] ?? '';
 
+        // Debug output
+        error_log("Received data - BowserID: $bowserId, Report: $report, Type: $typeOfReport");
+
         // Validate inputs
         if (empty($bowserId) || empty($report) || empty($typeOfReport)) {
             throw new Exception("All fields are required");
         }
 
-        // Validate typeOfReport is one of the allowed values
+        // Validate typeOfReport
         $allowedTypes = ['Urgent', 'Medium', 'Low'];
         if (!in_array($typeOfReport, $allowedTypes)) {
             throw new Exception("Invalid report type");
@@ -36,20 +39,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         
         if ($db->connect_error) {
-            throw new Exception("Connection failed: " . $db->connect_error);
+            error_log("Connection failed: " . $db->connect_error);
+            throw new Exception("Database connection failed");
         }
+
+        // Debug output
+        error_log("Database connected successfully");
         
-        // Prepare and execute the insert statement
+        // Prepare statement
         $stmt = $db->prepare("INSERT INTO bowser_reports (userId, bowserId, report, typeOfReport) VALUES (?, ?, ?, ?)");
         if (!$stmt) {
-            throw new Exception("Prepare failed: " . $db->error);
+            error_log("Prepare failed: " . $db->error);
+            throw new Exception("Failed to prepare statement");
         }
-        
+
+        // Bind parameters and execute
         $stmt->bind_param('iiss', $userId, $bowserId, $report, $typeOfReport);
         
         if (!$stmt->execute()) {
-            throw new Exception("Execute failed: " . $stmt->error);
+            error_log("Execute failed: " . $stmt->error);
+            throw new Exception("Failed to submit report");
         }
+
+        error_log("Report submitted successfully");
         
         $stmt->close();
         $db->close();

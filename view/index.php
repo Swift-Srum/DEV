@@ -83,7 +83,7 @@ if($id == null)
 
             <div class="report-form" style="margin-top: 20px;">
                 <h3>Report this Bowser</h3>
-                <form action="../report/submit_bowser.php" method="POST">
+                <form id="reportForm" action="../report/submit_bowser.php" method="POST">
                     <input type="hidden" name="bowserId" value="<?php echo $id; ?>">
                     
                     <div class="form-group">
@@ -106,15 +106,17 @@ if($id == null)
                         Submit Report
                     </button>
                 </form>
-            </div>
 
-            <?php
-            if (isset($_GET['success']) && $_GET['success'] == 1) {
-                echo '<div style="color: green; margin-top: 10px; text-align: center;">Report submitted successfully!</div>';
-            } else if (isset($_GET['error']) && $_GET['error'] == 1) {
-                echo '<div style="color: red; margin-top: 10px; text-align: center;">Error submitting report. Please try again.</div>';
-            }
-            ?>
+                <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
+                    <div style="background-color: #d4edda; color: #155724; padding: 10px; margin-top: 10px; border-radius: 5px; text-align: center;">
+                        Report submitted successfully!
+                    </div>
+                <?php elseif (isset($_GET['error']) && $_GET['error'] == 1): ?>
+                    <div style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-top: 10px; border-radius: 5px; text-align: center;">
+                        Error submitting report. Please try again.
+                    </div>
+                <?php endif; ?>
+            </div>
 
         </div>
 
