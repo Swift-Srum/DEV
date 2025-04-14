@@ -3,11 +3,6 @@
 require_once('../essential/config.php');
 include('../essential/backbone.php');
 
-// Check if user is logged in
-if (!isset($_COOKIE['user_name']) || !isset($_COOKIE['sessionId'])) {
-    header("Location: /login");
-    exit();
-}
 
 // Get user ID and validate session
 $username = $_COOKIE['user_name'];
@@ -25,10 +20,21 @@ $postcode = filter_input(INPUT_POST, 'postcode', FILTER_SANITIZE_STRING);
 $report = filter_input(INPUT_POST, 'report', FILTER_SANITIZE_STRING);
 $reportType = filter_input(INPUT_POST, 'reportType', FILTER_SANITIZE_STRING);
 
+if ($postcode) { //Checks if the postcode is valid, if not, return an error
+        $url = "https://api.postcodes.io/postcodes/$postcode";
+        $response = file_get_contents($url);
+        $data = json_decode($response, true);
+
+        if (!isset($data['result'])) {
+			header("Location: /report/index.php?success=0"); //Probably change this to be more descriptive
+			exit();
+        }
+    }
+
 // Validate report type
 $validTypes = ['Urgent', 'Medium', 'Low'];
 if (!in_array($reportType, $validTypes)) {
-    header("Location: /index.php?error=1");
+    header("Location: /report/index.php?success=0");
     exit();
 }
 
@@ -39,9 +45,9 @@ try {
     $stmt->bind_param("isss", $userId, $postcode, $report, $reportType);
     
     if ($stmt->execute()) {
-        header("Location: /index.php?success=1");
+        header("Location: ../report/index.php?success=1");
     } else {
-        header("Location: /index.php?error=1");
+        header("Location: ../report/index.php?success=0");
     }
     
     $stmt->close();
@@ -49,7 +55,7 @@ try {
     
 } catch (Exception $e) {
     error_log("Database error: " . $e->getMessage());
-    header("Location: /index.php?error=1");
+    header("Location: ../report/index.php?success=0");
     exit();
 }
 ?>

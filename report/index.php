@@ -1,13 +1,6 @@
 <?php
 include('../essential/backbone.php');
 
-
-// Check if user is logged in
-if (!isset($_COOKIE['user_name']) || !isset($_COOKIE['sessionId'])) {
-    header("Location: /login");
-    exit();
-}
-
 $username = $_COOKIE['user_name'];
 $sessionID = $_COOKIE['sessionId'];
 $userId = getUserID();
@@ -18,6 +11,13 @@ if (!$loggedIn) {
     header("Location: /login");
     exit();
 }
+
+$success = $_GET['success'];
+
+if($success == 1)
+	echo '<script>alert("Report made successfully")</script>';
+else if(!$success && $success != null)
+	echo '<script>alert("Report failed for an unspecified reason")</script>'; //This should be updated in future to be more descriptive. Currently checks basic things like postcode being valid, empty fields etc
 ?>
 
 <!DOCTYPE html>
