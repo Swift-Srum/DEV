@@ -1,5 +1,5 @@
 <?php
-include('./essential/backbone.php'); 
+include('../essential/backbone.php');
 
 
 // Check if user is logged in
