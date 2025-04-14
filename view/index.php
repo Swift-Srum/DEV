@@ -56,71 +56,66 @@ if ($id == null)
 <!DOCTYPE html>   
 <html>   
 <head>  
-<link rel="stylesheet" href="/assets/css/style_details.css"> 
-<style>
-    img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-        margin: 0 auto;
-    }
-</style>
-<meta name="viewport" content="width=device-width, initial-scale=1">  
-<title><?php echo htmlspecialchars($name); ?></title>  
+    <meta name="viewport" content="width=device-width, initial-scale=1">  
+    <title><?php echo htmlspecialchars($name); ?></title>  
+    <link rel="stylesheet" href="/assets/css/style_details.css"> 
 </head>    
 <body>    
-
-<div class="container">   
-    <?php 
-    echo "<img src=\"../create-bowser/uploads/" . htmlspecialchars($itemImageName) . "\" onerror=\"this.onerror=null;this.src='/create-item/uploads/NOIMAGE.jpg';\" alt=\"Bowser Image\">";
-    echo "<br>";
-    echo "<label>Bowser Name: " . htmlspecialchars($name) . "</label><br>";
-    echo "<label>Details: " . htmlspecialchars($details) . "</label><br>";            
-    echo "<label>Postcode: " . htmlspecialchars($postcode) . "</label><br>";
-    echo "<label>Status: " . htmlspecialchars($status) . "</label><br>";
-    ?>
-    <br>
-
-    <button type="button" class="cancelbtn" onclick="window.location.href='../';">Back</button>
-
-    <div class="report-form" style="margin-top: 20px;">
-        <h3>Report this Bowser</h3>
-        <form id="reportForm" action="../report/submit_bowser.php" method="POST">
-            <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($id); ?>">
-            
-            <div class="form-group">
-                <label for="report">Report Details:</label>
-                <textarea id="report" name="report" rows="5" required style="width: 100%; margin-bottom: 10px;"></textarea>
+    <div class="container">   
+        <div class="bowser-details">
+            <div class="image-container">
+                <?php echo "<img src=\"../create-bowser/uploads/" . htmlspecialchars($itemImageName) . "\" 
+                    onerror=\"this.onerror=null;this.src='/create-item/uploads/NOIMAGE.jpg';\" 
+                    alt=\"Bowser Image\">"; ?>
             </div>
-            
-            <div class="form-group">
-                <label for="typeOfReport">Urgency Level:</label>
-                <select id="typeOfReport" name="typeOfReport" required style="width: 100%; margin-bottom: 10px;">
-                    <option value="Urgent">Urgent</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Low">Low</option>
-                </select>
-            </div>
-            
-            <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                Submit Report
-            </button>
-        </form>
 
-        <?php 
-        if (isset($_GET['success'])) {
-            if ($_GET['success'] == 1) {
-                echo '<div style="color: green; margin-top: 10px;">Report submitted successfully!</div>';
-            } else {
-                echo '<div style="color: red; margin-top: 10px;">Failed to submit the report. Please try again.</div>';
-            }
-        }
-        ?>
+            <div class="details-section">
+                <h2><?php echo htmlspecialchars($name); ?></h2>
+                <div class="detail-item">
+                    <strong>Details:</strong> <?php echo htmlspecialchars($details); ?>
+                </div>
+                <div class="detail-item">
+                    <strong>Postcode:</strong> <?php echo htmlspecialchars($postcode); ?>
+                </div>
+                <div class="detail-item">
+                    <strong>Status:</strong> <span class="status-<?php echo strtolower($status); ?>">
+                        <?php echo htmlspecialchars($status); ?>
+                    </span>
+                </div>
+            </div>
+
+            <?php if ($loggedIn): ?>
+                <div class="report-section">
+                    <h3>Report this Bowser</h3>
+                    <form id="reportForm" action="../report/submit_bowser.php" method="POST">
+                        <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($id); ?>">
+                        <div class="form-group">
+                            <label for="report">Report Details:</label>
+                            <textarea name="report" id="report" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="typeOfReport">Urgency Level:</label>
+                            <select name="typeOfReport" id="typeOfReport" required>
+                                <option value="Urgent">Urgent</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="submit-btn">Submit Report</button>
+                    </form>
+                </div>
+            <?php else: ?>
+                <div class="login-prompt">
+                    <p>Please log in to report this bowser</p>
+                    <a href="../login/" class="login-btn">Log In to Report</a>
+                </div>
+            <?php endif; ?>
+
+            <div class="navigation">
+                <button type="button" class="back-btn" onclick="window.location.href='../';">Back to List</button>
+            </div>
+        </div>
     </div>
-</div>
-
-<center><h1><?php echo htmlspecialchars($err); ?></h1></center>
-
 </body>     
 </html>
 
