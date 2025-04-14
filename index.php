@@ -101,44 +101,31 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
 
         .nav-link {
             text-decoration: none;
-            color: #333;
             padding: 8px 16px;
             border-radius: 4px;
-            background-color: #f0f0f0;
             transition: all 0.3s ease;
             display: inline-block;
+            color: white;
+            background-color: #2196F3;
         }
 
         .nav-link:hover {
-            background-color: #e0e0e0;
-        }
-
-        .nav-link.admin {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .nav-link.admin:hover {
-            background-color: #45a049;
+            background-color: #1976D2;
         }
 
         .nav-link.logout {
-            background-color: #f44336;
-            color: white;
+            background-color: #2196F3;
         }
 
         .nav-link.logout:hover {
-            background-color: #da190b;
+            background-color: #1976D2;
         }
     </style>
 </head>
 <body>
-    <?php if ($loggedIn): ?>
+    <?php if (isset($_COOKIE['user_name']) && isset($_COOKIE['sessionId'])): ?>
         <div class="top-nav">
-            <?php if ($isAdmin): ?>
-                <a href="/admin/dashboard.php" class="nav-link admin">Admin Dashboard</a>
-            <?php endif; ?>
-            <a href="/login/logout.php" class="nav-link logout">Logout</a>
+            <a href="login/logout.php?session=<?php echo $_COOKIE['sessionId']; ?>" class="nav-link logout">Logout</a>
         </div>
     <?php else: ?>
         <div class="top-nav">
