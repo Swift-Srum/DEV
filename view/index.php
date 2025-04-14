@@ -98,43 +98,29 @@ if (isset($_SESSION['feedback'])) {
             <p><strong>Status:</strong> <span class="status"><?php echo htmlspecialchars($status); ?></span></p>
         </div>
 
-        <div class="container">
-            <?php if (isset($_COOKIE['user_name']) && isset($_COOKIE['sessionId']) && confirmSessionKey($_COOKIE['user_name'], $_COOKIE['sessionId'])): ?>
-                <!-- Report form for logged in users -->
-                <div class="report-form">
-                    <h2>Report Bowser</h2>
-                    <form method="POST" action="../report/submit_bowser.php">
-                        <input type="hidden" name="bowserId" value="<?php echo $bowserId; ?>">
-                        
-                        <div class="form-group">
-                            <label for="typeOfReport">Type of Report:</label>
-                            <select name="typeOfReport" id="typeOfReport" required>
-                                <option value="">Select a reason</option>
-                                <option value="Inappropriate Content">Inappropriate Content</option>
-                                <option value="Wrong Information">Wrong Information</option>
-                                <option value="Duplicate Entry">Duplicate Entry</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
+        <?php if ($loggedIn): ?>
+            <div class="report-form">
+                <h3>Report this Bowser</h3>
+                <form action="../report/submit_bowser.php" method="POST">
+                    <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($bowserId); ?>">
+                    <div class="form-group">
+                        <label>Report Details:</label>
+                        <textarea name="report" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Urgency Level:</label>
+                        <select name="typeOfReport" required>
+                            <option value="Urgent">Urgent</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">Submit Report</button>
+                </form>
+            </div>
+        <?php endif; ?>
 
-                        <div class="form-group">
-                            <label for="report">Details:</label>
-                            <textarea name="report" id="report" required></textarea>
-                        </div>
-
-                        <div class="action-buttons">
-                            <button type="submit" class="btn btn-blue">Submit Report</button>
-                            <a href="../list/" class="btn btn-blue">Back to List</a>
-                        </div>
-                    </form>
-                </div>
-            <?php else: ?>
-                <div class="action-buttons">
-                    <a href="../login/" class="btn btn-blue">Log in to Report</a>
-                    <a href="../list/" class="btn btn-blue">Back to List</a>
-                </div>
-            <?php endif; ?>
-        </div>
+        <a href="../" class="btn-back">Back to List</a>
     </div>
 </body>     
 </html>
