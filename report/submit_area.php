@@ -16,9 +16,16 @@ if (!$loggedIn) {
 }
 
 // Validate and sanitize form inputs
-$postcode = filter_input(INPUT_POST, 'postcode', FILTER_SANITIZE_STRING);
+$postcode = strtoupper(filter_input(INPUT_POST, 'postcode', FILTER_SANITIZE_STRING));
 $report = filter_input(INPUT_POST, 'report', FILTER_SANITIZE_STRING);
 $reportType = filter_input(INPUT_POST, 'reportType', FILTER_SANITIZE_STRING);
+
+if(empty($postcode) || empty($report) || empty($reportType)){
+	header("Location: /report/index.php?success=0"); //Return error if the fields are empty. The client checks this anyway but dont want people tampering with requests
+	echo 'Empty fields';
+	exit();
+}
+	
 
 if ($postcode) { //Checks if the postcode is valid, if not, return an error
         $url = "https://api.postcodes.io/postcodes/$postcode";
@@ -27,6 +34,7 @@ if ($postcode) { //Checks if the postcode is valid, if not, return an error
 
         if (!isset($data['result'])) {
 			header("Location: /report/index.php?success=0"); //Probably change this to be more descriptive
+			echo 'Invalid postcode';
 			exit();
         }
     }
@@ -48,6 +56,7 @@ try {
         header("Location: ../report/index.php?success=1");
     } else {
         header("Location: ../report/index.php?success=0");
+		echo 'Database error';
     }
     
     $stmt->close();
