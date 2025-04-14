@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $weight_empty = trim(strip_tags($_POST['weight_empty'] ?? ''));
     $weight_full = trim(strip_tags($_POST['weight_full'] ?? ''));
     $supplier = trim(strip_tags($_POST['supplier'] ?? ''));
-    $postcode = trim(strip_tags($_POST['postcode'] ?? ''));
+    $postcode = strtoupper(trim(strip_tags($_POST['postcode'] ?? '')));
     $date_received = trim(strip_tags($_POST['date_received'] ?? ''));
     $date_returned = trim(strip_tags($_POST['date_returned'] ?? ''));
 
