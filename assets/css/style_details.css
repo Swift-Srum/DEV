@@ -1,3 +1,4 @@
+
 body {
     overflow: auto;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,10 +13,10 @@ body {
     margin: 0 auto;
     padding: 20px;
     text-align: center;
-    background-color: #101210; /* Light gray background */
+    background-color: #ffffff; /* Changed from dark to white */
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 1.5s ease-in; /* Add fade-in animation for the container */
+    animation: fadeIn 1.5s ease-in; /* Fade-in animation */
 }
 
 .main-content {
