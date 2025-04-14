@@ -4,6 +4,7 @@ error_reporting(1);
 
 // Include necessary files
 include('../essential/backbone.php');
+include('../essential/internal.php');
 
 // Set HTTP headers for security measures
 header("X-XSS-Protection: 1; mode=block");
@@ -19,42 +20,22 @@ $isAdmin = checkIsUserAdmin($username, $sessionID);
 
 $userType = "";
 
-// Retrieve bowser ID from URL parameter
-$bowserId =  $_GET['id'];
-
-// Validate bowserId
+// Fetch bowser details
+$bowserId = $_GET['id'] ?? '';
 if (!is_numeric($bowserId)) {
-    throw new Exception("Invalid bowserId.");
+    die("Invalid bowser ID.");
 }
 
-// Retrieve bike details based on user ID and bike ID
-$itemInfo = getBowserDetails($bowserId);
+$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$stmt = $db->prepare("SELECT * FROM bowsers WHERE id = ? AND active = 1 LIMIT 1;");
+$stmt->bind_param('i', $bowserId);
+$stmt->execute();
+$result = $stmt->get_result();
+$bowser = $result->fetch_assoc();
 
-// Get bike image name
-$itemImageName = getItemImage($bowserId);
-
-// Initialize AES encryption object and decrypt error message from URL parameter
-$aes = new AES256;
-$err = $_GET['err'];
-$err = $aes->decrypt($err, "secretkey");
-
-// Loop through bike details array and assign values to variables
-foreach ($itemInfo as $item) {
-	$id = $item['id'];
-    $name = $item['name'];
-	$postcode = $item['postcode'];
-	$details = $item['manufacturer_details'];
-	$active = $item['active'];
-	
-	if($active)
-		$status = "Avaliable";
-	else
-		$status = "Unavaliable";
+if (!$bowser) {
+    die("Bowser not found or inactive.");
 }
-
-// If item ID is null, redirect to main page
-if($id == null)
-	header("Location: ../");
 ?>
 <!DOCTYPE html>   
 <html>   
@@ -69,66 +50,57 @@ if($id == null)
     }
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1">  
-<title> <?php echo $name;?></title>  
+<title> <?php echo htmlspecialchars($bowser['name']); ?></title>  
 </head>    
 <body>    
     <form>  
         <div class="container">   
             <?php 
-			echo "<img src=\"../create-bowser/uploads/$itemImageName\" onerror=\"this.onerror=null;this.src='/create-item/uploads/NOIMAGE.jpg';\"";
+			echo "<img src=\"../create-bowser/uploads/" . htmlspecialchars($bowser['image']) . "\" onerror=\"this.onerror=null;this.src='/create-item/uploads/NOIMAGE.jpg';\"";
 			echo "<br>";
-            echo "<label>Bowser Name: $name</label><br>";
-            echo "<label>Details: $details</label><br>";            
-			echo "<label>Postcode: $postcode</label><br>";
-			echo "<label>Status: $status </label><br>";
+            echo "<label>Bowser Name: " . htmlspecialchars($bowser['name']) . "</label><br>";
+            echo "<label>Details: " . htmlspecialchars($bowser['manufacturer_details']) . "</label><br>";            
+			echo "<label>Postcode: " . htmlspecialchars($bowser['postcode']) . "</label><br>";
+			echo "<label>Status: Available </label><br>";
             ?>
 			<br>
 			
 			<a href="../"><button type="button" class="cancelbtn">Back</button></a>
 
-            <div class="report-form" style="margin-top: 20px;">
-                <h3>Report this Bowser</h3>
-                <form id="reportForm" action="../report/submit_bowser.php" method="POST">
-                    <input type="hidden" name="bowserId" value="<?php echo $id; ?>">
-                    
-                    <div class="form-group">
-                        <label for="report">Report Details:</label>
-                        <textarea id="report" name="report" rows="5" required 
-                            style="width: 100%; margin-bottom: 10px;"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="typeOfReport">Urgency Level:</label>
-                        <select id="typeOfReport" name="typeOfReport" required 
-                            style="width: 100%; margin-bottom: 10px;">
-                            <option value="Urgent">Urgent</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Low">Low</option>
-                        </select>
-                    </div>
-                    
-                    <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                        Submit Report
-                    </button>
-                </form>
-
-                <?php 
-                if (isset($_GET['success'])) {
-                    if ($_GET['success'] == 1) {
-                        echo '<div style="color: green;">Report submitted successfully!</div>';
-                    } else {
-                        echo '<div style="color: red;">Failed to submit the report. Please try again.</div>';
-                    }
-                }
-                ?>
-            </div>
+            <?php if ($loggedIn): ?>
+                <div class="report-form" style="margin-top: 20px;">
+                    <h3>Report this Bowser</h3>
+                    <form id="reportForm" action="../report/submit_bowser.php" method="POST">
+                        <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($bowserId); ?>">
+                        
+                        <div class="form-group">
+                            <label for="report">Report Details:</label>
+                            <textarea id="report" name="report" rows="5" required 
+                                style="width: 100%; margin-bottom: 10px;"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="typeOfReport">Urgency Level:</label>
+                            <select id="typeOfReport" name="typeOfReport" required 
+                                style="width: 100%; margin-bottom: 10px;">
+                                <option value="Urgent">Urgent</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                            Submit Report
+                        </button>
+                    </form>
+                </div>
+            <?php else: ?>
+                <p>You must be logged in to report this bowser.</p>
+            <?php endif; ?>
 
         </div>
 
     </form>   
-
-    <center> <h1> <?php echo $err ?> </h1> </center> 
-
 
 </body>     
 </html>
