@@ -22,9 +22,10 @@ switch ($action) {
         $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $password = hash('sha256', $_POST['password']);
+        $userType = filter_input(INPUT_POST, 'userType', FILTER_SANITIZE_STRING);
         
-        $stmt = $db->prepare("INSERT INTO users (username, email, password, active) VALUES (?, ?, ?, 1)");
-        $stmt->bind_param('sss', $username, $email, $password);
+        $stmt = $db->prepare("INSERT INTO users (username, email, password, active, userType) VALUES (?, ?, ?, 1, ?)");
+        $stmt->bind_param('ssss', $username, $email, $password, $userType);
         $stmt->execute();
         break;
         
@@ -46,6 +47,24 @@ switch ($action) {
     case 'delete':
         $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
         $db->query("DELETE FROM users WHERE id = " . $id);
+        break;
+        
+    case 'updateStaffType':
+        $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+        $staff_type = filter_input(INPUT_POST, 'staff_type', FILTER_SANITIZE_STRING);
+        
+        $stmt = $db->prepare("UPDATE users SET staff_type = ? WHERE id = ?");
+        $stmt->bind_param('si', $staff_type, $id);
+        $stmt->execute();
+        break;
+        
+    case 'updateUserType':
+        $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
+        $userType = filter_input(INPUT_POST, 'userType', FILTER_SANITIZE_STRING);
+        
+        $stmt = $db->prepare("UPDATE users SET userType = ? WHERE id = ?");
+        $stmt->bind_param('si', $userType, $id);
+        $stmt->execute();
         break;
         
     default:

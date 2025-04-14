@@ -3,13 +3,14 @@ document.getElementById('addStaffForm').addEventListener('submit', async (e) => 
     const formData = new FormData(e.target);
     
     try {
-        const response = await fetch('/admin/actions.php', {
+        const response = await fetch('../admin/actions.php', {
             method: 'POST',
             body: new URLSearchParams({
                 action: 'add',
                 username: formData.get('username'),
                 email: formData.get('email'),
-                password: formData.get('password')
+                password: formData.get('password'),
+                userType: formData.get('userType')
             })
         });
         
@@ -97,5 +98,28 @@ async function deleteStaff(id) {
             console.error('Error:', error);
             alert('An error occurred');
         }
+    }
+}
+
+// Update the function name from updateStaffType to updateUserType
+async function updateUserType(id, userType) {
+    try {
+        const response = await fetch('../admin/actions.php', {
+            method: 'POST',
+            body: new URLSearchParams({
+                action: 'updateUserType',
+                id: id,
+                userType: userType
+            })
+        });
+        
+        if (response.ok) {
+            alert('User type updated successfully');
+        } else {
+            alert('Failed to update user type');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
     }
 }

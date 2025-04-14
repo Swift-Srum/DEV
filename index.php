@@ -5,6 +5,13 @@ include('./essential/backbone.php');
 header("X-XSS-Protection: 1; mode=block");
 header("X-Content-Type-Options: nosniff");
 
+$isAdmin = false;
+if (isset($_COOKIE['user_name']) && isset($_COOKIE['sessionId'])) {
+    $username = $_COOKIE['user_name'];
+    $sessionID = $_COOKIE['sessionId'];
+    $isAdmin = checkIsUserAdmin($username, $sessionID);
+}
+
 $username = $_COOKIE['user_name'];
 $sessionID = $_COOKIE['sessionId'];
 $idx = getUserID();
@@ -101,6 +108,13 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
 		?>
 		
     </header>
+    
+    <nav>
+        <!-- ...existing navigation items... -->
+        <?php if ($isAdmin): ?>
+        <a href="admin/dashboard.php" class="nav-button">Admin Dashboard</a>
+        <?php endif; ?>
+    </nav>
     
     <section class="search-section">
     <h2>Find bowsers near by</h2>

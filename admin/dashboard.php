@@ -16,9 +16,18 @@ if (!$loggedIn || !$isAdmin) {
     exit();
 }
 
+// Use the existing user types from the database
+$staffTypes = [
+    'public' => 'Public User',
+    'admin' => 'Administrator',
+    'maintainer' => 'Maintainer',
+    'dispatcher' => 'Dispatcher',
+    'driver' => 'Driver'
+];
+
 // Get all staff members
 $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-$result = $db->query("SELECT id, username, email, active FROM users WHERE id != " . getUserID());
+$result = $db->query("SELECT id, username, email, active, userType FROM users WHERE id != " . getUserID());
 $staff = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
@@ -28,15 +37,15 @@ $staff = $result->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/assets/css/admin_style.css">
+    <link rel="stylesheet" href="../assets/css/admin_style.css">
 </head>
 <body>
     <div class="admin-container">
         <header>
             <h1>Admin Dashboard</h1>
             <nav>
-                <a href="/" class="nav-link">Home</a>
-                <a href="/login/logout.php" class="nav-link">Logout</a>
+                <a href="../" class="nav-link">Home</a>
+                <a href="../login/logout.php" class="nav-link">Logout</a>
             </nav>
         </header>
 
@@ -47,6 +56,12 @@ $staff = $result->fetch_all(MYSQLI_ASSOC);
                     <input type="text" name="username" placeholder="Username" required>
                     <input type="email" name="email" placeholder="Email" required>
                     <input type="password" name="password" placeholder="Password" required>
+                    <select name="userType" required>
+                        <option value="">Select User Type</option>
+                        <?php foreach($staffTypes as $value => $label): ?>
+                            <option value="<?php echo $value; ?>"><?php echo $label; ?></option>
+                        <?php endforeach; ?>
+                    </select>
                     <button type="submit">Add Staff Member</button>
                 </form>
             </section>
@@ -58,6 +73,7 @@ $staff = $result->fetch_all(MYSQLI_ASSOC);
                         <tr>
                             <th>Username</th>
                             <th>Email</th>
+                            <th>User Type</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -67,6 +83,15 @@ $staff = $result->fetch_all(MYSQLI_ASSOC);
                         <tr data-id="<?php echo $member['id']; ?>">
                             <td><?php echo htmlspecialchars($member['username']); ?></td>
                             <td><?php echo htmlspecialchars($member['email']); ?></td>
+                            <td>
+                                <select class="user-type-select" onchange="updateUserType(<?php echo $member['id']; ?>, this.value)">
+                                    <?php foreach($staffTypes as $value => $label): ?>
+                                        <option value="<?php echo $value; ?>" <?php echo $member['userType'] == $value ? 'selected' : ''; ?>>
+                                            <?php echo $label; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </td>
                             <td><?php echo $member['active'] ? 'Active' : 'Inactive'; ?></td>
                             <td>
                                 <button onclick="editStaff(<?php echo $member['id']; ?>)">Edit</button>
@@ -83,6 +108,6 @@ $staff = $result->fetch_all(MYSQLI_ASSOC);
         </main>
     </div>
 
-    <script src="/assets/js/admin.js"></script>
+    <script src="../assets/js/admin.js"></script>
 </body>
 </html>
