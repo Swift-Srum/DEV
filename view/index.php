@@ -5,6 +5,9 @@ error_reporting(1);
 // Include necessary files
 include('../essential/backbone.php');
 
+// Start session
+session_start();
+
 // Set HTTP headers for security measures
 header("X-XSS-Protection: 1; mode=block");
 header("X-Content-Type-Options: nosniff");
@@ -52,6 +55,13 @@ foreach ($itemInfo as $item) {
 // If item ID is null, redirect to main page
 if ($id == null)
     header("Location: ../");
+
+// Retrieve feedback from session
+$feedback = null;
+if (isset($_SESSION['feedback'])) {
+    $feedback = $_SESSION['feedback'];
+    unset($_SESSION['feedback']); // Clear the feedback after retrieving
+}
 ?>
 <!DOCTYPE html>   
 <html>   
@@ -61,6 +71,13 @@ if ($id == null)
     <link rel="stylesheet" href="/assets/css/style_details.css"> 
 </head>    
 <body>    
+    <?php if ($feedback): ?>
+        <div class="feedback-message feedback-<?php echo $feedback['type']; ?>">
+            <?php echo htmlspecialchars($feedback['message']); ?>
+            <span class="feedback-close" onclick="this.parentElement.remove()">×</span>
+        </div>
+    <?php endif; ?>
+
     <div class="container">
         <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
             <div class="success-message">
