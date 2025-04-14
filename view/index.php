@@ -86,40 +86,24 @@ if($id == null)
 			
 			<a href="../"><button type="button" class="cancelbtn">Back</button></a>
 
-            <div class="report-container" style="margin-top: 20px;">
-                <form method="POST" action="../report/submit_bowser.php" onsubmit="return validateForm()">
-                    <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($_GET['bowserId']); ?>">
-                    
+            <div class="report-container">
+                <form action="../report/submit_bowser.php" method="POST">
+                    <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($bowserId); ?>">
                     <div class="form-group">
-                        <label for="report">Report Details:</label>
-                        <textarea name="report" id="report" class="form-control" required></textarea>
+                        <label>Report Details:</label>
+                        <textarea name="report" required></textarea>
                     </div>
-                    
                     <div class="form-group">
-                        <label for="typeOfReport">Report Type:</label>
-                        <select name="typeOfReport" id="typeOfReport" class="form-control" required>
+                        <label>Urgency:</label>
+                        <select name="typeOfReport" required>
                             <option value="Urgent">Urgent</option>
                             <option value="Medium">Medium</option>
                             <option value="Low">Low</option>
                         </select>
                     </div>
-                    
-                    <button type="submit" class="btn btn-primary">Submit Report</button>
+                    <button type="submit">Submit</button>
                 </form>
             </div>
-
-            <script>
-            function validateForm() {
-                const report = document.getElementById('report').value.trim();
-                const typeOfReport = document.getElementById('typeOfReport').value;
-                
-                if (!report || !typeOfReport) {
-                    alert('Please fill all required fields');
-                    return false;
-                }
-                return true;
-            }
-            </script>
 
         </div>
 
