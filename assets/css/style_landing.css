@@ -126,4 +126,39 @@ input {
     background-color: #0056b3;
 }
 
-
+/* button group for the top right buttons */
+.btn-group {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    text-decoration: none;
+}
+.btn-group button {
+    background-color: #007bff; /* Green background */
+    color: white; /* White text */
+    padding: 10px 20px; /* Some padding */
+    text-decoration: none;
+    cursor: pointer; /* Pointer/hand icon */
+    float: left; /* Float the buttons side by side */
+  }
+  .btn-group a {
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    color: white;
+  }
+  .btn-group button:not(:last-child) {
+    border-right: none; /* Prevent double borders */
+  }
+  
+  /* Clear floats (clearfix hack) */
+  .btn-group:after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+  
+  /* Add a background color on hover */
+  .btn-group button:hover {
+    background-color: #3700b3;
+  }
