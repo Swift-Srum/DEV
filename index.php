@@ -94,7 +94,7 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
     <header>
         <h1>Report Bowser</h1>
         <p>Lorem ipsum dolor sit amet et delectus accommodare his consul copiosae legendos at vix ad putent delectus delicata usu.</p>
-        <button class="report-btn">Report Here</button>
+        <a href="/report/" class="report-btn">Report Here</a>
 		<?php 
 		if ($isAdmin)
 			echo '<a href="/create-bowser" class="report-btn">Add Bowser</a>';
