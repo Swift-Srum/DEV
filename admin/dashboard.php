@@ -16,9 +16,8 @@ if (!$loggedIn || !$isAdmin) {
     exit();
 }
 
-// Use the existing user types from the database
+// Update the staff types array to remove public user
 $staffTypes = [
-    'public' => 'Public User',
     'admin' => 'Administrator',
     'maintainer' => 'Maintainer',
     'dispatcher' => 'Dispatcher',
