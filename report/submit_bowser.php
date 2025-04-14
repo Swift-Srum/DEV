@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("iiss", $userId, $bowserId, $report, $typeOfReport);
     
     if ($stmt->execute()) {
-        header("Location: ../view/index.php?bowserId=" . $bowserId . "&status=success");
+        header("Location: ../view/?bowserId=" . $bowserId . "&status=success");
         exit();
     }
 }

@@ -62,55 +62,48 @@ if ($id == null)
 </head>    
 <body>    
     <div class="container">
-        <div class="main-content">
-            <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
-                <div class="alert-success">
-                    Report submitted successfully!
-                </div>
-            <?php endif; ?>
-
-            <div class="bowser-image">
-                <img src="../create-bowser/uploads/<?php echo htmlspecialchars($itemImageName); ?>" 
-                    alt="Bowser Image"
-                    onerror="this.src='/create-item/uploads/NOIMAGE.jpg'">
+        <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
+            <div class="alert-success">
+                Report submitted successfully!
             </div>
+        <?php endif; ?>
 
-            <div class="details">
-                <h2><?php echo htmlspecialchars($name); ?></h2>
-                <p><strong>Details:</strong> <?php echo htmlspecialchars($details); ?></p>
-                <p><strong>Postcode:</strong> <?php echo htmlspecialchars($postcode); ?></p>
-                <p><strong>Status:</strong> <span class="status"><?php echo htmlspecialchars($status); ?></span></p>
-            </div>
-
-            <?php if ($loggedIn): ?>
-                <div class="report-form">
-                    <h3>Report this Bowser</h3>
-                    <form action="../report/submit_bowser.php" method="POST">
-                        <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($id); ?>">
-                        <div class="form-group">
-                            <label>Report Details:</label>
-                            <textarea name="report" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Urgency Level:</label>
-                            <select name="typeOfReport" required>
-                                <option value="Urgent">Urgent</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Low">Low</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn-submit">Submit Report</button>
-                    </form>
-                </div>
-            <?php else: ?>
-                <div class="login-prompt">
-                    <p>Please log in to report this bowser</p>
-                    <a href="../login/" class="login-btn">Log In to Report</a>
-                </div>
-            <?php endif; ?>
-
-            <a href="../" class="btn-back">Back to List</a>
+        <div class="bowser-image">
+            <img src="../create-bowser/uploads/<?php echo htmlspecialchars($itemImageName); ?>" 
+                alt="Bowser Image"
+                onerror="this.src='/create-item/uploads/NOIMAGE.jpg'">
         </div>
+
+        <div class="details">
+            <h2><?php echo htmlspecialchars($name); ?></h2>
+            <p><strong>Details:</strong> <?php echo htmlspecialchars($details); ?></p>
+            <p><strong>Postcode:</strong> <?php echo htmlspecialchars($postcode); ?></p>
+            <p><strong>Status:</strong> <span class="status"><?php echo htmlspecialchars($status); ?></span></p>
+        </div>
+
+        <?php if ($loggedIn): ?>
+            <div class="report-form">
+                <h3>Report this Bowser</h3>
+                <form action="../report/submit_bowser.php" method="POST">
+                    <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($bowserId); ?>">
+                    <div class="form-group">
+                        <label>Report Details:</label>
+                        <textarea name="report" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Urgency Level:</label>
+                        <select name="typeOfReport" required>
+                            <option value="Urgent">Urgent</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">Submit Report</button>
+                </form>
+            </div>
+        <?php endif; ?>
+
+        <a href="../" class="btn-back">Back to List</a>
     </div>
 </body>     
 </html>
