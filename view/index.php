@@ -82,6 +82,41 @@ if($id == null)
 			<a href="../"><button type="button" class="cancelbtn">Back</button></a>
 			<a href="/report?id=<?= $id ?>"><button type="button" class="cancelbtn">Report</button></a>
 
+            <div class="report-form" style="margin-top: 20px;">
+                <h3>Report this Bowser</h3>
+                <form action="../report/submit_bowser.php" method="POST">
+                    <input type="hidden" name="bowserId" value="<?php echo $id; ?>">
+                    
+                    <div class="form-group">
+                        <label for="report">Report Details:</label>
+                        <textarea id="report" name="report" rows="5" required 
+                            style="width: 100%; margin-bottom: 10px;"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="typeOfReport">Urgency Level:</label>
+                        <select id="typeOfReport" name="typeOfReport" required 
+                            style="width: 100%; margin-bottom: 10px;">
+                            <option value="Urgent">Urgent</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="cancelbtn" style="background-color: #ff4444;">
+                        Submit Report
+                    </button>
+                </form>
+            </div>
+
+            <?php
+            if (isset($_GET['success']) && $_GET['success'] == 1) {
+                echo '<div style="color: green; margin-top: 10px;">Report submitted successfully!</div>';
+            } else if (isset($_GET['error']) && $_GET['error'] == 1) {
+                echo '<div style="color: red; margin-top: 10px;">Error submitting report. Please try again.</div>';
+            }
+            ?>
+
         </div>
 
     </form>   
