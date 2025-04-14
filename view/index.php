@@ -86,40 +86,40 @@ if($id == null)
 			
 			<a href="../"><button type="button" class="cancelbtn">Back</button></a>
 
-            <div class="report-form" style="margin-top: 20px;">
-                <h3>Report this Bowser</h3>
-                <form id="reportForm" action="../report/submit_bowser.php" method="POST">
-                    <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($id); ?>">
+            <div class="report-container" style="margin-top: 20px;">
+                <form method="POST" action="../report/submit_bowser.php" onsubmit="return validateForm()">
+                    <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($_GET['bowserId']); ?>">
                     
                     <div class="form-group">
                         <label for="report">Report Details:</label>
-                        <textarea id="report" name="report" rows="5" required></textarea>
+                        <textarea name="report" id="report" class="form-control" required></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label for="typeOfReport">Urgency Level:</label>
-                        <select id="typeOfReport" name="typeOfReport" required>
+                        <label for="typeOfReport">Report Type:</label>
+                        <select name="typeOfReport" id="typeOfReport" class="form-control" required>
                             <option value="Urgent">Urgent</option>
                             <option value="Medium">Medium</option>
                             <option value="Low">Low</option>
                         </select>
                     </div>
-
-                    <button type="submit" class="submit-btn">Submit Report</button>
+                    
+                    <button type="submit" class="btn btn-primary">Submit Report</button>
                 </form>
-
-                <div id="reportFeedback" class="feedback-message">
-                    <?php 
-                    if (isset($_GET['success'])) {
-                        if ($_GET['success'] == '1') {
-                            echo '<div class="success">Report submitted successfully!</div>';
-                        } else {
-                            echo '<div class="error">Failed to submit report: ' . htmlspecialchars($_GET['message'] ?? 'Unknown error') . '</div>';
-                        }
-                    }
-                    ?>
-                </div>
             </div>
+
+            <script>
+            function validateForm() {
+                const report = document.getElementById('report').value.trim();
+                const typeOfReport = document.getElementById('typeOfReport').value;
+                
+                if (!report || !typeOfReport) {
+                    alert('Please fill all required fields');
+                    return false;
+                }
+                return true;
+            }
+            </script>
 
         </div>
 
