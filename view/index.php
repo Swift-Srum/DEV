@@ -98,10 +98,10 @@ if (isset($_SESSION['feedback'])) {
             <p><strong>Status:</strong> <span class="status"><?php echo htmlspecialchars($status); ?></span></p>
         </div>
 
-        <?php if ($loggedIn): ?>
-            <div class="report-form">
-                <h3>Report this Bowser</h3>
-                <form action="../report/submit_bowser.php" method="POST">
+        <div class="action-buttons">
+            <?php if (isset($_COOKIE['user_name']) && isset($_COOKIE['sessionId']) && confirmSessionKey($_COOKIE['user_name'], $_COOKIE['sessionId'])): ?>
+                <!-- Report form for logged in users -->
+                <form class="report-form" method="POST" action="../report/submit_bowser.php">
                     <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($bowserId); ?>">
                     <div class="form-group">
                         <label>Report Details:</label>
@@ -117,10 +117,12 @@ if (isset($_SESSION['feedback'])) {
                     </div>
                     <button type="submit" class="btn-submit">Submit Report</button>
                 </form>
-            </div>
-        <?php endif; ?>
-
-        <a href="../" class="btn-back">Back to List</a>
+            <?php else: ?>
+                <a href="../login/" class="btn btn-blue">Log in to Report</a>
+            <?php endif; ?>
+            
+            <a href="../list/" class="btn btn-blue">Back to List</a>
+        </div>
     </div>
 </body>     
 </html>
