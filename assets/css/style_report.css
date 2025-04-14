@@ -1,0 +1,58 @@
+/* General body styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center; /* Centers content horizontally */
+    align-items: center;    /* Centers content vertically */
+    height: 100vh;          /* Full viewport height */
+    background-color: #f4f4f9; /* Light background color */
+}
+
+/* Header styling */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 2rem;
+    color: #333;
+}
+
+/* Report options container */
+.report-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between buttons */
+    align-items: center;
+}
+
+/* Button styling */
+.report-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.report-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Form container styling */
+#formContainer {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 400px; /* Restrict form width */
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
