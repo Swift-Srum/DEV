@@ -1,28 +1,21 @@
 <?php
-include('../essential/backbone.php');
+include('../essential/internal.php');
 
-// Check if the user is logged in
-$username = $_COOKIE['user_name'] ?? '';
-$sessionID = $_COOKIE['sessionId'] ?? '';
-$loggedIn = confirmSessionKey($username, $sessionID);
+// Validate and sanitize inputs
+$userId = intval($_POST['userId']);
+$postcode = htmlspecialchars($_POST['postcode']);
+$report = htmlspecialchars($_POST['report']);
+$reportType = htmlspecialchars($_POST['reportType']);
 
-if (!$loggedIn) {
-    // Redirect to login page if not logged in
-    header("Location: /login.php");
-    exit();
-}
+// Insert the report into the database
+$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$q = $db->prepare("INSERT INTO area_reports (userId, postcode, report, reportType) VALUES (?, ?, ?, ?)");
+$q->bind_param('isss', $userId, $postcode, $report, $reportType);
+$q->execute();
 
-$postcode = $_POST['postcode'] ?? '';
-$report = $_POST['report'] ?? '';
-$reportType = $_POST['reportType'] ?? '';
-$userId = getUserID();
-
-if (!empty($postcode) && !empty($report) && !empty($reportType)) {
-    $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    $q = $db->prepare("INSERT INTO `area_reports` (`postcode`, `report`, `reportType`, `userId`) VALUES (?, ?, ?, ?)");
-    $q->bind_param('sssi', $postcode, $report, $reportType, $userId);
-    $q->execute();
-    header("Location: /report/?success=area");
+if ($q->affected_rows > 0) {
+    echo "Report submitted successfully!";
 } else {
-    header("Location: /report/?error=area");
+    echo "Error submitting report.";
 }
+?>
