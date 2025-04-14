@@ -62,52 +62,44 @@ if ($id == null)
 </head>    
 <body>    
     <div class="container">
-        <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
-            <div class="success-message">
-                <strong>Bowser successfully reported!</strong>
-            </div>
-        <?php endif; ?>
-        
-        <div class="bowser-details">
-            <div class="image-container">
-                <?php echo "<img src=\"../create-bowser/uploads/" . htmlspecialchars($itemImageName) . "\" 
-                    onerror=\"this.onerror=null;this.src='/create-item/uploads/NOIMAGE.jpg';\" 
-                    alt=\"Bowser Image\">"; ?>
+        <div class="main-content">
+            <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
+                <div class="alert-success">
+                    Report submitted successfully!
+                </div>
+            <?php endif; ?>
+
+            <div class="bowser-image">
+                <img src="../create-bowser/uploads/<?php echo htmlspecialchars($itemImageName); ?>" 
+                    alt="Bowser Image"
+                    onerror="this.src='/create-item/uploads/NOIMAGE.jpg'">
             </div>
 
-            <div class="details-section">
+            <div class="details">
                 <h2><?php echo htmlspecialchars($name); ?></h2>
-                <div class="detail-item">
-                    <strong>Details:</strong> <?php echo htmlspecialchars($details); ?>
-                </div>
-                <div class="detail-item">
-                    <strong>Postcode:</strong> <?php echo htmlspecialchars($postcode); ?>
-                </div>
-                <div class="detail-item">
-                    <strong>Status:</strong> <span class="status-<?php echo strtolower($status); ?>">
-                        <?php echo htmlspecialchars($status); ?>
-                    </span>
-                </div>
+                <p><strong>Details:</strong> <?php echo htmlspecialchars($details); ?></p>
+                <p><strong>Postcode:</strong> <?php echo htmlspecialchars($postcode); ?></p>
+                <p><strong>Status:</strong> <span class="status"><?php echo htmlspecialchars($status); ?></span></p>
             </div>
 
             <?php if ($loggedIn): ?>
-                <div class="report-section">
+                <div class="report-form">
                     <h3>Report this Bowser</h3>
-                    <form id="reportForm" action="../report/submit_bowser.php" method="POST">
+                    <form action="../report/submit_bowser.php" method="POST">
                         <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($id); ?>">
                         <div class="form-group">
-                            <label for="report">Report Details:</label>
-                            <textarea name="report" id="report" required></textarea>
+                            <label>Report Details:</label>
+                            <textarea name="report" required></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="typeOfReport">Urgency Level:</label>
-                            <select name="typeOfReport" id="typeOfReport" required>
+                            <label>Urgency Level:</label>
+                            <select name="typeOfReport" required>
                                 <option value="Urgent">Urgent</option>
                                 <option value="Medium">Medium</option>
                                 <option value="Low">Low</option>
                             </select>
                         </div>
-                        <button type="submit" class="submit-btn">Submit Report</button>
+                        <button type="submit" class="btn-submit">Submit Report</button>
                     </form>
                 </div>
             <?php else: ?>
@@ -117,9 +109,7 @@ if ($id == null)
                 </div>
             <?php endif; ?>
 
-            <div class="navigation">
-                <button type="button" class="back-btn" onclick="window.location.href='../';">Back to List</button>
-            </div>
+            <a href="../" class="btn-back">Back to List</a>
         </div>
     </div>
 </body>     

@@ -20,10 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
     $stmt = $db->prepare("INSERT INTO bowser_reports (userId, bowserId, report, typeOfReport) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("iiss", $userId, $bowserId, $report, $typeOfReport);
-    $stmt->execute();
     
-    header("Location: ../view/?id=" . $bowserId);
-    exit();
+    if ($stmt->execute()) {
+        header("Location: ../view/index.php?bowserId=" . $bowserId . "&status=success");
+        exit();
+    }
 }
 
 header("Location: ../view/");
