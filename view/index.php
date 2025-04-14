@@ -89,38 +89,36 @@ if($id == null)
             <div class="report-form" style="margin-top: 20px;">
                 <h3>Report this Bowser</h3>
                 <form id="reportForm" action="../report/submit_bowser.php" method="POST">
-                    <input type="hidden" name="bowserId" value="<?php echo $id; ?>">
+                    <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($id); ?>">
                     
                     <div class="form-group">
                         <label for="report">Report Details:</label>
-                        <textarea id="report" name="report" rows="5" required 
-                            style="width: 100%; margin-bottom: 10px;"></textarea>
+                        <textarea id="report" name="report" rows="5" required></textarea>
                     </div>
                     
                     <div class="form-group">
                         <label for="typeOfReport">Urgency Level:</label>
-                        <select id="typeOfReport" name="typeOfReport" required 
-                            style="width: 100%; margin-bottom: 10px;">
+                        <select id="typeOfReport" name="typeOfReport" required>
                             <option value="Urgent">Urgent</option>
                             <option value="Medium">Medium</option>
                             <option value="Low">Low</option>
                         </select>
                     </div>
-                    
-                    <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                        Submit Report
-                    </button>
+
+                    <button type="submit" class="submit-btn">Submit Report</button>
                 </form>
 
-                <?php 
-                if (isset($_GET['success'])) {
-                    if ($_GET['success'] == 1) {
-                        echo '<div style="color: green;">Report submitted successfully!</div>';
-                    } else {
-                        echo '<div style="color: red;">Failed to submit the report. Please try again.</div>';
+                <div id="reportFeedback" class="feedback-message">
+                    <?php 
+                    if (isset($_GET['success'])) {
+                        if ($_GET['success'] == '1') {
+                            echo '<div class="success">Report submitted successfully!</div>';
+                        } else {
+                            echo '<div class="error">Failed to submit report: ' . htmlspecialchars($_GET['message'] ?? 'Unknown error') . '</div>';
+                        }
                     }
-                }
-                ?>
+                    ?>
+                </div>
             </div>
 
         </div>
