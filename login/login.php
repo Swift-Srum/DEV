@@ -41,8 +41,13 @@ function verifyUser($username, $password) {
                     // Execute the query
                     $q->execute();
 
-                    // Redirect the user to the main page
-                    header('Location: ../');
+                    // Check if user is admin and redirect accordingly
+                    if ($res["admin"] == 1) {
+                        header('Location: ../admin/dashboard.php');
+                    } else {
+                        header('Location: ../');
+                    }
+                    
                     // Set a cookie for the session ID, valid for 24 hours
                     setcookie("sessionId", $sessKey, time() + 86400, '/'); // Eh ... I'll leave it for now ...
                     // Set a cookie for the username, valid for 24 hours
