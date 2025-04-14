@@ -5,6 +5,9 @@ error_reporting(1);
 // Include necessary files
 include('../essential/backbone.php');
 
+// Start session
+session_start();
+
 // Set HTTP headers for security measures
 header("X-XSS-Protection: 1; mode=block");
 header("X-Content-Type-Options: nosniff");
@@ -27,106 +30,97 @@ if (!is_numeric($bowserId)) {
     throw new Exception("Invalid bowserId.");
 }
 
-// Retrieve bike details based on user ID and bike ID
+// Retrieve bowser details
 $itemInfo = getBowserDetails($bowserId);
 
-// Get bike image name
+// Get bowser image name
 $itemImageName = getItemImage($bowserId);
 
-// Initialize AES encryption object and decrypt error message from URL parameter
+// Initialize AES encryption object and decrypt error message if any
 $aes = new AES256;
-$err = $_GET['err'];
+$err = $_GET['err'] ?? '';
 $err = $aes->decrypt($err, "secretkey");
 
-// Loop through bike details array and assign values to variables
+// Assign bowser details to variables
 foreach ($itemInfo as $item) {
-	$id = $item['id'];
+    $id = $item['id'];
     $name = $item['name'];
-	$postcode = $item['postcode'];
-	$details = $item['manufacturer_details'];
-	$active = $item['active'];
-	
-	if($active)
-		$status = "Avaliable";
-	else
-		$status = "Unavaliable";
+    $postcode = $item['postcode'];
+    $details = $item['manufacturer_details'];
+    $active = $item['active'];
+    
+    $status = $active ? "Available" : "Unavailable";
 }
 
 // If item ID is null, redirect to main page
-if($id == null)
-	header("Location: ../");
+if ($id == null)
+    header("Location: ../");
+
+// Retrieve feedback from session
+$feedback = null;
+if (isset($_SESSION['feedback'])) {
+    $feedback = $_SESSION['feedback'];
+    unset($_SESSION['feedback']); // Clear the feedback after retrieving
+}
 ?>
 <!DOCTYPE html>   
 <html>   
 <head>  
-<link rel="stylesheet" href="/assets/css/style_details.css"> 
-<style>
-    img {
-        max-width: 100%; /* Ensure the image does not exceed the container width */
-        height: auto; /* Maintain the aspect ratio */
-        display: block; /* Ensure proper layout */
-        margin: 0 auto; /* Center the image horizontally */
-    }
-</style>
-<meta name="viewport" content="width=device-width, initial-scale=1">  
-<title> <?php echo $name;?></title>  
+    <meta name="viewport" content="width=device-width, initial-scale=1">  
+    <title><?php echo htmlspecialchars($name); ?></title>  
+    <link rel="stylesheet" href="/assets/css/style_details.css"> 
 </head>    
 <body>    
-    <form>  
-        <div class="container">   
-            <?php 
-			echo "<img src=\"../create-bowser/uploads/$itemImageName\" onerror=\"this.onerror=null;this.src='/create-item/uploads/NOIMAGE.jpg';\"";
-			echo "<br>";
-            echo "<label>Bowser Name: $name</label><br>";
-            echo "<label>Details: $details</label><br>";            
-			echo "<label>Postcode: $postcode</label><br>";
-			echo "<label>Status: $status </label><br>";
-            ?>
-			<br>
-			
-			<a href="../"><button type="button" class="cancelbtn">Back</button></a>
+    <?php if ($feedback): ?>
+        <div class="feedback-message feedback-<?php echo $feedback['type']; ?>">
+            <?php echo htmlspecialchars($feedback['message']); ?>
+            <span class="feedback-close" onclick="this.parentElement.remove()">×</span>
+        </div>
+    <?php endif; ?>
 
-            <div class="report-form" style="margin-top: 20px;">
+    <div class="container">
+        <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
+            <div class="success-message">
+                Report submitted successfully!
+            </div>
+        <?php endif; ?>
+
+        <div class="bowser-image">
+            <img src="../create-bowser/uploads/<?php echo htmlspecialchars($itemImageName); ?>" 
+                alt="Bowser Image"
+                onerror="this.src='/create-item/uploads/NOIMAGE.jpg'">
+        </div>
+
+        <div class="details">
+            <h2><?php echo htmlspecialchars($name); ?></h2>
+            <p><strong>Details:</strong> <?php echo htmlspecialchars($details); ?></p>
+            <p><strong>Postcode:</strong> <?php echo htmlspecialchars($postcode); ?></p>
+            <p><strong>Status:</strong> <span class="status"><?php echo htmlspecialchars($status); ?></span></p>
+        </div>
+
+        <?php if ($loggedIn): ?>
+            <div class="report-form">
                 <h3>Report this Bowser</h3>
-                <form id="reportForm" action="../report/submit_bowser.php" method="POST">
-                    <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($id); ?>">
-                    
+                <form action="../report/submit_bowser.php" method="POST">
+                    <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($bowserId); ?>">
                     <div class="form-group">
-                        <label for="report">Report Details:</label>
-                        <textarea id="report" name="report" rows="5" required></textarea>
+                        <label>Report Details:</label>
+                        <textarea name="report" required></textarea>
                     </div>
-                    
                     <div class="form-group">
-                        <label for="typeOfReport">Urgency Level:</label>
-                        <select id="typeOfReport" name="typeOfReport" required>
+                        <label>Urgency Level:</label>
+                        <select name="typeOfReport" required>
                             <option value="Urgent">Urgent</option>
                             <option value="Medium">Medium</option>
                             <option value="Low">Low</option>
                         </select>
                     </div>
-
-                    <button type="submit" class="submit-btn">Submit Report</button>
+                    <button type="submit" class="btn-submit">Submit Report</button>
                 </form>
-
-                <div id="reportFeedback" class="feedback-message">
-                    <?php 
-                    if (isset($_GET['success'])) {
-                        if ($_GET['success'] == '1') {
-                            echo '<div class="success">Report submitted successfully!</div>';
-                        } else {
-                            echo '<div class="error">Failed to submit report: ' . htmlspecialchars($_GET['message'] ?? 'Unknown error') . '</div>';
-                        }
-                    }
-                    ?>
-                </div>
             </div>
+        <?php endif; ?>
 
-        </div>
-
-    </form>   
-
-    <center> <h1> <?php echo $err ?> </h1> </center> 
-
-
+        <a href="../" class="btn-back">Back to List</a>
+    </div>
 </body>     
 </html>
