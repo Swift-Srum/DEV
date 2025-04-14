@@ -61,7 +61,13 @@ if ($id == null)
     <link rel="stylesheet" href="/assets/css/style_details.css"> 
 </head>    
 <body>    
-    <div class="container">   
+    <div class="container">
+        <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
+            <div class="success-message">
+                <strong>Bowser successfully reported!</strong>
+            </div>
+        <?php endif; ?>
+        
         <div class="bowser-details">
             <div class="image-container">
                 <?php echo "<img src=\"../create-bowser/uploads/" . htmlspecialchars($itemImageName) . "\" 
