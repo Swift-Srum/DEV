@@ -78,6 +78,13 @@ if(isset($_POST['userID']) && isset($_POST['password']) && isset($_POST['confirm
 	if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 		die("responseCode=4&message=Invalid email.");
 	}
+	
+	$userId = getUserIDByEmail($email);
+
+	if($userId != false && $email != null){
+		header("Location: /register/?err=" . urlencode($aes->encrypt("The email you provided is already in use.", "secretkey")));
+		exit();
+	}
 
 
 
