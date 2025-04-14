@@ -112,20 +112,15 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
         .nav-link:hover {
             background-color: #1976D2;
         }
-
-        .nav-link.logout {
-            background-color: #2196F3;
-        }
-
-        .nav-link.logout:hover {
-            background-color: #1976D2;
-        }
     </style>
 </head>
 <body>
     <?php if (isset($_COOKIE['user_name']) && isset($_COOKIE['sessionId'])): ?>
         <div class="top-nav">
-            <a href="login/logout.php?session=<?php echo $_COOKIE['sessionId']; ?>" class="nav-link logout">Logout</a>
+            <?php if ($isAdmin): ?>
+                <a href="admin/dashboard.php" class="nav-link">Admin Dashboard</a>
+            <?php endif; ?>
+            <a href="login/logout.php?session=<?php echo $_COOKIE['sessionId']; ?>" class="nav-link">Logout</a>
         </div>
     <?php else: ?>
         <div class="top-nav">
@@ -143,13 +138,6 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
 		?>
 		
     </header>
-    
-    <nav>
-        <!-- ...existing navigation items... -->
-        <?php if ($isAdmin): ?>
-        <a href="admin/dashboard.php" class="nav-button">Admin Dashboard</a>
-        <?php endif; ?>
-    </nav>
     
     <section class="search-section">
     <h2>Find bowsers near by</h2>
