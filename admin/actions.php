@@ -24,9 +24,15 @@ switch ($action) {
         $password = hash('sha256', $_POST['password']);
         $userType = filter_input(INPUT_POST, 'userType', FILTER_SANITIZE_STRING);
         
-        $stmt = $db->prepare("INSERT INTO users (username, email, password, active, userType) VALUES (?, ?, ?, 1, ?)");
-        $stmt->bind_param('ssss', $username, $email, $password, $userType);
-        $stmt->execute();
+        // Prevent adding public users through admin panel
+        if ($userType !== 'public') {
+            $stmt = $db->prepare("INSERT INTO users (username, email, password, active, userType) VALUES (?, ?, ?, 1, ?)");
+            $stmt->bind_param('ssss', $username, $email, $password, $userType);
+            $stmt->execute();
+        } else {
+            http_response_code(400);
+            exit('Invalid user type');
+        }
         break;
         
     case 'edit':
@@ -62,9 +68,15 @@ switch ($action) {
         $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
         $userType = filter_input(INPUT_POST, 'userType', FILTER_SANITIZE_STRING);
         
-        $stmt = $db->prepare("UPDATE users SET userType = ? WHERE id = ?");
-        $stmt->bind_param('si', $userType, $id);
-        $stmt->execute();
+        // Prevent setting user type to public
+        if ($userType !== 'public') {
+            $stmt = $db->prepare("UPDATE users SET userType = ? WHERE id = ?");
+            $stmt->bind_param('si', $userType, $id);
+            $stmt->execute();
+        } else {
+            http_response_code(400);
+            exit('Invalid user type');
+        }
         break;
         
     default:

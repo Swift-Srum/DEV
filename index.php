@@ -85,18 +85,66 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
     <link rel="stylesheet" href="/assets/css/style_landing.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        .top-nav {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-bottom-left-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
 
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            padding: 8px 16px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .nav-link:hover {
+            background-color: #e0e0e0;
+        }
+
+        .nav-link.admin {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .nav-link.admin:hover {
+            background-color: #45a049;
+        }
+
+        .nav-link.logout {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .nav-link.logout:hover {
+            background-color: #da190b;
+        }
+    </style>
 </head>
 <body>
-
-
-	<?php 
-	if ($loggedIn)
-		echo '<a href="/login/logout.php?session=' . $sessionID . '" class="top-right-btn">Logout</a>';
-	else
-		echo '<a href="/login" class="top-right-btn">Login</a>';
-	?>
-
+    <?php if ($loggedIn): ?>
+        <div class="top-nav">
+            <?php if ($isAdmin): ?>
+                <a href="/admin/dashboard.php" class="nav-link admin">Admin Dashboard</a>
+            <?php endif; ?>
+            <a href="/login/logout.php" class="nav-link logout">Logout</a>
+        </div>
+    <?php else: ?>
+        <div class="top-nav">
+            <a href="/login" class="nav-link">Login</a>
+        </div>
+    <?php endif; ?>
 
     <header>
         <h1>Report Bowser</h1>
