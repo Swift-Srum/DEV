@@ -1,5 +1,6 @@
 <?php
-error_reporting(1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 include('../essential/backbone.php');
 
 // Get the logged-in user's ID
@@ -34,19 +35,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Connect to database
         $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         
+        if ($db->connect_error) {
+            throw new Exception("Connection failed: " . $db->connect_error);
+        }
+        
         // Prepare and execute the insert statement
         $stmt = $db->prepare("INSERT INTO bowser_reports (userId, bowserId, report, typeOfReport) VALUES (?, ?, ?, ?)");
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $db->error);
+        }
+        
         $stmt->bind_param('iiss', $userId, $bowserId, $report, $typeOfReport);
         
-        if ($stmt->execute()) {
-            header("Location: ../view/index.php?id=" . $bowserId . "&success=1");
-            exit();
-        } else {
-            throw new Exception("Database error");
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed: " . $stmt->error);
         }
         
         $stmt->close();
         $db->close();
+        
+        header("Location: ../view/index.php?id=" . $bowserId . "&success=1");
+        exit();
         
     } catch (Exception $e) {
         error_log("Report submission error: " . $e->getMessage());

@@ -80,7 +80,6 @@ if($id == null)
 			<br>
 			
 			<a href="../"><button type="button" class="cancelbtn">Back</button></a>
-			<a href="/report?id=<?= $id ?>"><button type="button" class="cancelbtn">Report</button></a>
 
             <div class="report-form" style="margin-top: 20px;">
                 <h3>Report this Bowser</h3>
@@ -103,7 +102,7 @@ if($id == null)
                         </select>
                     </div>
                     
-                    <button type="submit" class="cancelbtn" style="background-color: #ff4444;">
+                    <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
                         Submit Report
                     </button>
                 </form>
@@ -111,9 +110,9 @@ if($id == null)
 
             <?php
             if (isset($_GET['success']) && $_GET['success'] == 1) {
-                echo '<div style="color: green; margin-top: 10px;">Report submitted successfully!</div>';
+                echo '<div style="color: green; margin-top: 10px; text-align: center;">Report submitted successfully!</div>';
             } else if (isset($_GET['error']) && $_GET['error'] == 1) {
-                echo '<div style="color: red; margin-top: 10px;">Error submitting report. Please try again.</div>';
+                echo '<div style="color: red; margin-top: 10px; text-align: center;">Error submitting report. Please try again.</div>';
             }
             ?>
 
