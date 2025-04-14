@@ -11,6 +11,8 @@ $sessionID = $_COOKIE['sessionId'];
 $loggedIn = confirmSessionKey($username, $sessionID);
 $isAdmin = checkIsUserAdmin($username, $sessionID);
 
+
+
 if (!$loggedIn || !$isAdmin) {
     header("Location: /login");
     exit();

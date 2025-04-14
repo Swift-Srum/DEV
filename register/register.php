@@ -57,7 +57,7 @@ function createAccount($username, $password, $email) {
     if($q->affected_rows == 1) {
         setcookie("sessionId", $sessKey, time() + 86400, '/'); 
         setcookie("user_name", $username, time() + 86400, '/');
-        header('Location: ../');
+        header('Location: ../register/verify_page.php');
         return "responseCode=1";
     }
 

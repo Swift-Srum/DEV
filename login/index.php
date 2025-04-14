@@ -27,6 +27,7 @@ $err = $aes->decrypt($err, "secretkey");
             <input type="password" id="password" placeholder="Enter Password" name="password" required>  
             <button type="button" onclick="login();">Login</button>   
 			<a href="/register"><button type="button" class="cancelbtn"> Register</button></a> 
+			<a href="/forgot-pass"><button type="button" class="cancelbtn"> Forgot Password</button></a> 
 			<a href="/"><button type="button" class="cancelbtn"> Cancel</button></a> 
         </div>  	
     </form>   

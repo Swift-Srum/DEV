@@ -1,10 +1,8 @@
 <?php
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
-    /* Admin panel functions */
 	
 	function createBowser($idx, $name, $manufacturer_details, $model, $serial_number, $specific_notes, $capacity_litres, $length_mm, $width_mm, $height_mm, $weight_empty_kg, $weight_full_kg, $supplier_company, $date_received, $date_returned, $postcode, $northings, $eastings, $longitude, $latitude) {
-    // Connect to the database
     $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     // Check for connection errors
@@ -47,6 +45,47 @@
     return $success;
 }
 
+	function send_mailjet_email($apiKey, $apiSecret, $fromEmail, $fromName, $toEmail, $toName, $subject, $text, $html = "") { //Function for sending emails
+		$url = 'https://api.mailjet.com/v3.1/send';
+	
+		$data = [
+			'Messages' => [[
+				'From' => [
+					'Email' => $fromEmail,
+					'Name'  => $fromName
+				],
+				'To' => [[
+					'Email' => $toEmail,
+					'Name'  => $toName
+				]],
+				'Subject' => $subject,
+				'TextPart' => $text,
+				'HTMLPart' => $html ?: nl2br($text)
+			]]
+		];
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_USERPWD, "$apiKey:$apiSecret");
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			'Content-Type: application/json'
+		]);
+
+		$response = curl_exec($ch);
+		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		curl_close($ch);
+
+		if ($httpCode === 200) {
+			return ["success" => true, "message" => "Email sent via Mailjet."];
+		} else {
+			return ["success" => false, "error" => "Failed with status code $httpCode", "response" => $response];
+		}
+	}
+
+
 
 	
 	function logImageUpload($fileName, $itemId) {
@@ -55,6 +94,93 @@
         $q->bind_param('si', $fileName, $itemId);
         $q->execute();
 	}
+	
+	function createCode($userId, $code, $timestamp) { //Used for email verification and password resets
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        $q = $db->prepare("INSERT INTO `verification_codes` (`userId`, `code`, `expires`) VALUES (?, ?, ?)");
+        $q->bind_param('isi', $userId, $code, $timestamp);
+        $q->execute();
+	}
+	
+	function checkCodeValid($userId, $code, $timestamp) {
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+		if ($db->connect_error) {
+			return false; // Optionally handle DB errors
+		}
+
+		$q = $db->prepare("SELECT * FROM `verification_codes` WHERE `userId` = ? AND `code` = ? AND `expires` > ?");
+		$q->bind_param('iss', $userId, $code, $timestamp);
+		$q->execute();
+		$result = $q->get_result();
+
+		$row = $result->fetch_array(MYSQLI_ASSOC);
+
+		if (!$row) {
+			return false;
+		}
+
+		return true;
+	}
+	
+	function setVerified()
+	{
+		if(isset($_COOKIE['user_name']) && isset($_COOKIE['sessionId']))
+		{
+			$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+            $q = $db->prepare("UPDATE users SET `verified` = 1 WHERE `sessionKey` = ? AND username = ?");
+            $q->bind_param('ss', $_COOKIE['sessionId'], $_COOKIE['user_name']);
+            $q->execute();
+			
+	}
+		
+		return "res=123";
+	}
+	
+	function resetPassword($userId, $password)
+	{
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		if ($db->connect_error) {
+			return false;
+		}
+
+		$q = $db->prepare("UPDATE users SET `password` = ? WHERE `id` = ?");
+		if (!$q) {
+			$db->close();
+			return false;
+		}
+
+		$q->bind_param('si', $password, $userId);
+		$success = $q->execute();
+
+		$q->close();
+		$db->close();
+
+		return $success;
+	}
+
+	
+	function checkCodeExists($userId, $timestamp) {
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+		if ($db->connect_error) {
+			return false; // Optionally handle DB errors
+		}
+
+		$q = $db->prepare("SELECT * FROM `verification_codes` WHERE `userId` = ? AND `expires` > ?");
+		$q->bind_param('is', $userId, $timestamp);
+		$q->execute();
+		$result = $q->get_result();
+
+		$row = $result->fetch_array(MYSQLI_ASSOC);
+
+		if (!$row) {
+			return false;
+		}
+
+		return true;
+	}
+
 	
 	function deleteItem($itemId) { //NOT CURRENTLY IN USE
 		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
@@ -66,7 +192,7 @@
 	function checkIsUserAdmin($adminName, $key) {
 		$key = str_replace(" ","",$key);
 		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-        $q = $db->prepare("SELECT admin FROM `users` WHERE `username` = ? AND `sessionKey` = ?");
+        $q = $db->prepare("SELECT admin FROM `users` WHERE `username` = ? AND `sessionKey` = ? AND `verified` = 1");
         $q->bind_param('ss', $adminName, $key);
         $q->execute();
 
@@ -114,7 +240,7 @@
 	{
 		$key = str_replace(" ","",$key);
 		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-		$q = $db->prepare("SELECT active FROM users WHERE username = ? AND sessionKey = ? LIMIT 1;");
+		$q = $db->prepare("SELECT active FROM users WHERE username = ? AND sessionKey = ? AND verified = 1 LIMIT 1;");
 		$q->bind_param('ss', $username, $key);
 		$q->execute();
 		
@@ -129,32 +255,76 @@
 
 		return false;
 	}
+	
+	function checkIsUnverified($username, $key)
+	{
+		$key = str_replace(" ","",$key);
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		$q = $db->prepare("SELECT active FROM users WHERE username = ? AND sessionKey = ? LIMIT 1;");
+		$q->bind_param('ss', $username, $key);
+		$q->execute();
+		
+		$res = $q->get_result();
+		
+		if($res = $res->fetch_array())
+		{
+			if((int)$res['verified'] == 0 && $key != "") {
+				return true;
+			} // Checks if unverified
+		}
+
+		return false;
+	}
 
 	
 	function getUserID()
 	{
 		if(isset($_COOKIE['user_name']) && isset($_COOKIE['sessionId']))
 		{
-			$loggedIn = confirmSessionKey($_COOKIE['user_name'], $_COOKIE['sessionId']);
 			
-			if($loggedIn == true)
+			$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+			$q = $db->prepare("SELECT * FROM users WHERE username = ? AND sessionKey = ? LIMIT 1;");
+			$q->bind_param('ss', $_COOKIE['user_name'], $_COOKIE['sessionId']);
+			$q->execute();
+				
+			$res = $q->get_result();
+				
+			if($res = $res->fetch_array())
 			{
-				$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-				$q = $db->prepare("SELECT * FROM users WHERE username = ? LIMIT 1;");
-				$q->bind_param('s', $_COOKIE['user_name']);
-				$q->execute();
-				
-				$res = $q->get_result();
-				
-				if($res = $res->fetch_array())
-				{
-					$st = rand();
-					return $res['id'];
-				}
+				$st = rand();
+				return $res['id'];
 			}
+			
 		}
 		
 		return "res=999";
+	}
+	
+	function getUserIDByEmail($email)
+	{
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		if ($db->connect_error) {
+			return false;
+		}
+
+		$q = $db->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+		if (!$q) {
+			return false;
+		}
+
+		$q->bind_param('s', $email);
+		$q->execute();
+		$res = $q->get_result();
+
+		if ($row = $res->fetch_array()) {
+			$q->close();
+			$db->close();
+			return $row['id'];
+		}
+
+		$q->close();
+		$db->close();
+		return false;
 	}
 
 
@@ -371,6 +541,23 @@ function getItemOwner($itemId) //NOT CURRENTLY IN USE
 
     if ($res = $res->fetch_array()) {
         return $res['ownerId'];
+    }
+
+    return false;
+}
+
+function getUserEmail($userId)
+{
+    $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+    $q = $db->prepare("SELECT email FROM `users` WHERE `id` = ?");
+    $q->bind_param('i', $userId);
+    $q->execute();
+
+    $res = $q->get_result();
+
+    if ($res = $res->fetch_array()) {
+        return $res['email'];
     }
 
     return false;

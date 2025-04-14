@@ -6,6 +6,9 @@ $sessionID = $_COOKIE['sessionId'];
 $userId = getUserID();
 
 // Validate session
+
+
+
 $loggedIn = confirmSessionKey($username, $sessionID);
 if (!$loggedIn) {
     header("Location: /login");

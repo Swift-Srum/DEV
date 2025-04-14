@@ -40,12 +40,17 @@ function verifyUser($username, $password) {
                     $q->bind_param('ss', $sessKey, $username);
                     // Execute the query
                     $q->execute();
+				
 
                     // Check if user is admin and redirect accordingly
                     if ($res["admin"] == 1) {
                         header('Location: ../admin/dashboard.php');
                     } else {
                         header('Location: ../');
+                    }
+					
+					if ($res["verified"] == 0) {
+                        header('Location: ../register/verify_page.php');
                     }
                     
                     // Set a cookie for the session ID, valid for 24 hours
