@@ -27,34 +27,31 @@ if (!is_numeric($bowserId)) {
     throw new Exception("Invalid bowserId.");
 }
 
-// Retrieve bike details based on user ID and bike ID
+// Retrieve bowser details
 $itemInfo = getBowserDetails($bowserId);
 
-// Get bike image name
+// Get bowser image name
 $itemImageName = getItemImage($bowserId);
 
-// Initialize AES encryption object and decrypt error message from URL parameter
+// Initialize AES encryption object and decrypt error message if any
 $aes = new AES256;
-$err = $_GET['err'];
+$err = $_GET['err'] ?? '';
 $err = $aes->decrypt($err, "secretkey");
 
-// Loop through bike details array and assign values to variables
+// Assign bowser details to variables
 foreach ($itemInfo as $item) {
-	$id = $item['id'];
+    $id = $item['id'];
     $name = $item['name'];
-	$postcode = $item['postcode'];
-	$details = $item['manufacturer_details'];
-	$active = $item['active'];
-	
-	if($active)
-		$status = "Avaliable";
-	else
-		$status = "Unavaliable";
+    $postcode = $item['postcode'];
+    $details = $item['manufacturer_details'];
+    $active = $item['active'];
+    
+    $status = $active ? "Available" : "Unavailable";
 }
 
 // If item ID is null, redirect to main page
-if($id == null)
-	header("Location: ../");
+if ($id == null)
+    header("Location: ../");
 ?>
 <!DOCTYPE html>   
 <html>   
@@ -62,55 +59,68 @@ if($id == null)
 <link rel="stylesheet" href="/assets/css/style_details.css"> 
 <style>
     img {
-        max-width: 100%; /* Ensure the image does not exceed the container width */
-        height: auto; /* Maintain the aspect ratio */
-        display: block; /* Ensure proper layout */
-        margin: 0 auto; /* Center the image horizontally */
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
     }
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1">  
-<title> <?php echo $name;?></title>  
+<title><?php echo htmlspecialchars($name); ?></title>  
 </head>    
 <body>    
-    <form>  
-        <div class="container">   
-            <?php 
-			echo "<img src=\"../create-bowser/uploads/$itemImageName\" onerror=\"this.onerror=null;this.src='/create-item/uploads/NOIMAGE.jpg';\"";
-			echo "<br>";
-            echo "<label>Bowser Name: $name</label><br>";
-            echo "<label>Details: $details</label><br>";            
-			echo "<label>Postcode: $postcode</label><br>";
-			echo "<label>Status: $status </label><br>";
-            ?>
-			<br>
-			
-			<a href="../"><button type="button" class="cancelbtn">Back</button></a>
 
-            <div class="report-container">
-                <form action="../report/submit_bowser.php" method="POST">
-                    <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($bowserId); ?>">
-                    <div class="form-group">
-                        <label>Report Details:</label>
-                        <textarea name="report" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Urgency:</label>
-                        <select name="typeOfReport" required>
-                            <option value="Urgent">Urgent</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Low">Low</option>
-                        </select>
-                    </div>
-                    <button type="submit">Submit</button>
-                </form>
+<div class="container">   
+    <?php 
+    echo "<img src=\"../create-bowser/uploads/" . htmlspecialchars($itemImageName) . "\" onerror=\"this.onerror=null;this.src='/create-item/uploads/NOIMAGE.jpg';\" alt=\"Bowser Image\">";
+    echo "<br>";
+    echo "<label>Bowser Name: " . htmlspecialchars($name) . "</label><br>";
+    echo "<label>Details: " . htmlspecialchars($details) . "</label><br>";            
+    echo "<label>Postcode: " . htmlspecialchars($postcode) . "</label><br>";
+    echo "<label>Status: " . htmlspecialchars($status) . "</label><br>";
+    ?>
+    <br>
+
+    <button type="button" class="cancelbtn" onclick="window.location.href='../';">Back</button>
+
+    <div class="report-form" style="margin-top: 20px;">
+        <h3>Report this Bowser</h3>
+        <form id="reportForm" action="../report/submit_bowser.php" method="POST">
+            <input type="hidden" name="bowserId" value="<?php echo htmlspecialchars($id); ?>">
+            
+            <div class="form-group">
+                <label for="report">Report Details:</label>
+                <textarea id="report" name="report" rows="5" required style="width: 100%; margin-bottom: 10px;"></textarea>
             </div>
+            
+            <div class="form-group">
+                <label for="typeOfReport">Urgency Level:</label>
+                <select id="typeOfReport" name="typeOfReport" required style="width: 100%; margin-bottom: 10px;">
+                    <option value="Urgent">Urgent</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            
+            <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                Submit Report
+            </button>
+        </form>
 
-        </div>
+        <?php 
+        if (isset($_GET['success'])) {
+            if ($_GET['success'] == 1) {
+                echo '<div style="color: green; margin-top: 10px;">Report submitted successfully!</div>';
+            } else {
+                echo '<div style="color: red; margin-top: 10px;">Failed to submit the report. Please try again.</div>';
+            }
+        }
+        ?>
+    </div>
+</div>
 
-    </form>   
-
-    <center> <h1> <?php echo $err ?> </h1> </center> 
-
+<center><h1><?php echo htmlspecialchars($err); ?></h1></center>
 
 </body>     
 </html>
+
