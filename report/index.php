@@ -33,15 +33,7 @@ if (!$loggedIn) {
         <h1>Report an Area</h1>
     </header>
     
-    <div id="formContainer">
-        <?php if (isset($_GET['success'])): ?>
-            <div class="alert success">Report submitted successfully!</div>
-        <?php endif; ?>
-        
-        <?php if (isset($_GET['error'])): ?>
-            <div class="alert error">Error submitting report. Please try again.</div>
-        <?php endif; ?>
-
+    <div id="formContainer" class="active">  <!-- Added 'active' class -->
         <form action="/report/submit_area.php" method="POST">
             <input type="hidden" name="userId" value="<?php echo htmlspecialchars($userId); ?>">
             

@@ -53,18 +53,12 @@ header h1 {
 /* Form container styling */
 #formContainer {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 2rem auto;  /* Added margin-top and bottom */
     padding: 2rem;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: none; /* Initially hidden */
-    text-align: center;
-}
-
-/* Active form styling */
-#formContainer.active {
-    display: block; /* Show the form when active */
+    /* display: none; Remove this line */
 }
 
 form {
