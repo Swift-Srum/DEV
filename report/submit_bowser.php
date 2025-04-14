@@ -21,12 +21,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $report = trim(strip_tags($_POST['report'] ?? ''));
         $typeOfReport = $_POST['typeOfReport'] ?? '';
 
-        // Debug output
-        error_log("Received data - BowserID: $bowserId, Report: $report, Type: $typeOfReport");
+        // Debugging output
+        error_log("Debug: userId=$userId, bowserId=$bowserId, report=$report, typeOfReport=$typeOfReport");
 
         // Validate inputs
         if (empty($bowserId) || empty($report) || empty($typeOfReport)) {
             throw new Exception("All fields are required");
+        }
+
+        if (!is_numeric($bowserId) || !is_numeric($userId)) {
+            throw new Exception("Invalid bowserId or userId.");
         }
 
         // Validate typeOfReport
@@ -43,9 +47,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Database connection failed");
         }
 
-        // Debug output
-        error_log("Database connected successfully");
-        
         // Prepare statement
         $stmt = $db->prepare("INSERT INTO bowser_reports (userId, bowserId, report, typeOfReport) VALUES (?, ?, ?, ?)");
         if (!$stmt) {
@@ -59,6 +60,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (!$stmt->execute()) {
             error_log("Execute failed: " . $stmt->error);
             throw new Exception("Failed to submit report");
+        }
+
+        // Check if rows were affected
+        if ($stmt->affected_rows === 0) {
+            throw new Exception("No rows were inserted. Please check your data.");
         }
 
         error_log("Report submitted successfully");

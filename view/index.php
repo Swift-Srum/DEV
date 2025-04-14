@@ -22,6 +22,11 @@ $userType = "";
 // Retrieve bowser ID from URL parameter
 $bowserId =  $_GET['id'];
 
+// Validate bowserId
+if (!is_numeric($bowserId)) {
+    throw new Exception("Invalid bowserId.");
+}
+
 // Retrieve bike details based on user ID and bike ID
 $itemInfo = getBowserDetails($bowserId);
 
@@ -107,15 +112,15 @@ if($id == null)
                     </button>
                 </form>
 
-                <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
-                    <div style="background-color: #d4edda; color: #155724; padding: 10px; margin-top: 10px; border-radius: 5px; text-align: center;">
-                        Report submitted successfully!
-                    </div>
-                <?php elseif (isset($_GET['error']) && $_GET['error'] == 1): ?>
-                    <div style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-top: 10px; border-radius: 5px; text-align: center;">
-                        Error submitting report. Please try again.
-                    </div>
-                <?php endif; ?>
+                <?php 
+                if (isset($_GET['success'])) {
+                    if ($_GET['success'] == 1) {
+                        echo '<div style="color: green;">Report submitted successfully!</div>';
+                    } else {
+                        echo '<div style="color: red;">Failed to submit the report. Please try again.</div>';
+                    }
+                }
+                ?>
             </div>
 
         </div>
