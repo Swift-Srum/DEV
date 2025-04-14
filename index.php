@@ -85,58 +85,28 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
     <link rel="stylesheet" href="/assets/css/style_landing.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <style>
-        .top-nav {
-            position: fixed;
-            top: 0;
-            right: 0;
-            padding: 15px;
-            display: flex;
-            gap: 10px;
-            z-index: 1000;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-bottom-left-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .nav-link {
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            display: inline-block;
-            color: white;
-            background-color: #2196F3;
-        }
-
-        .nav-link:hover {
-            background-color: #1976D2;
-        }
-    </style>
 </head>
 <body>
-    <?php if (isset($_COOKIE['user_name']) && isset($_COOKIE['sessionId'])): ?>
-        <div class="top-nav">
-            <?php if ($isAdmin): ?>
-                <a href="admin/dashboard.php" class="nav-link">Admin Dashboard</a>
-            <?php endif; ?>
-            <a href="login/logout.php?session=<?php echo $_COOKIE['sessionId']; ?>" class="nav-link">Logout</a>
-        </div>
-    <?php else: ?>
-        <div class="top-nav">
-            <a href="/login" class="nav-link">Login</a>
-        </div>
+<div class=btn-group>
+	<?php 
+	if ($loggedIn)
+		echo '<button><a href="/login/logout.php?session=' . $sessionID . '" class="button">Logout</a></button>';
+	else
+		echo '<button><a href="/login" class="button">Login</a></button>';
+	?> <button class="button">About Us</button><button class="button">FAQ</button>
+    <?php if ($isAdmin): ?>
+    <button><a href="admin/dashboard.php" class="nav-link">Admin Dashboard</a></button>
     <?php endif; ?>
+</div>
 
-    <header>
-        <h1>Report Bowser</h1>
-        <p>Lorem ipsum dolor sit amet et delectus accommodare his consul copiosae legendos at vix ad putent delectus delicata usu.</p>
-        <a href="/report/" class="report-btn">Report Here</a>
+    <header style="text-align:left">
+        <h1><b>Swift Bowsers</b>
+        <p>Welcome to Swift Water Bowsers</b></p></h1>
+    <a href="/report/" class="report-btn">Report Here</a>
 		<?php 
 		if ($isAdmin)
 			echo '<a href="/create-bowser" class="report-btn">Add Bowser</a>';
 		?>
-		
     </header>
     
     <section class="search-section">
