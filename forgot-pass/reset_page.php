@@ -13,7 +13,7 @@ $sessionID = $_COOKIE['sessionId'];
 $email = $_GET['email'];
 $userId = getUserIDByEmail($email);
 
-if($userId == "res=999" && $email != null){
+if($userId == false && $email != null){
 	header("Location: /forgot-pass/reset_page.php/?err=" . urlencode($aes->encrypt("The email you provided does not exist in our database.", "secretkey")));
 }
 
