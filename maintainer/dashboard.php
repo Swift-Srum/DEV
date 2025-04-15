@@ -40,6 +40,22 @@ $maintenanceStatuses = [
 include('../maintainer/header.php');
 ?>
 
+<style>
+.resolve-btn {
+    margin-left: 5px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.resolve-btn:hover {
+    background-color: #45a049;
+}
+</style>
+
 <div class="content-area">
     <div class="content-header">
         <h1>Maintenance Dashboard</h1>
@@ -80,6 +96,7 @@ include('../maintainer/header.php');
                     </td>
                     <td>
                         <button onclick="updateMaintenance(<?= $record['id'] ?>)">Save Changes</button>
+                        <button onclick="resolveMaintenance(<?= $record['id'] ?>)" class="resolve-btn">Resolve</button>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -109,6 +126,31 @@ function updateMaintenance(id) {
             alert('Maintenance record updated successfully');
         } else {
             alert('Error updating maintenance record: ' + data.message);
+        }
+    });
+}
+
+function resolveMaintenance(id) {
+    if (!confirm('Are you sure you want to resolve this maintenance record?')) {
+        return;
+    }
+
+    fetch('resolve_maintenance.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `id=${id}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove the row from the table
+            const row = document.querySelector(`tr[data-id="${id}"]`);
+            row.remove();
+            alert('Maintenance record resolved successfully');
+        } else {
+            alert('Error resolving maintenance record: ' + data.message);
         }
     });
 }
