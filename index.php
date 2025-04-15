@@ -85,7 +85,7 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
         <button><a href="admin/dashboard.php" class="button">Admin Dashboard</a></button>
     <?php endif; ?>
     <?php if ($loggedIn && $userType === 'dispatcher'): ?>
-        <button><a href="dispatcher/dashboard.php" class="button">Go to Dispatcher Dashboard</a></button>
+        <button><a href="/dispatcher/reported_areas.php" class="button">Go to Dispatcher Dashboard</a></button>
     <?php endif; ?>
 </div>
 </div>

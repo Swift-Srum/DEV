@@ -38,8 +38,8 @@ function verifyUser($username, $password) {
                             header('Location: ../admin/dashboard.php');
                             break;
                         case 'dispatcher':
-                            header('Location: ../dispatcher/dashboard.php');
-                            break;
+                            header("Location: ../dispatcher/reported_areas.php");
+                            exit();
                         case 'maintainer':
                             header('Location: ../maintainer/dashboard.php');
                             break;
