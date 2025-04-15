@@ -72,147 +72,131 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
-<div class=btn-group>
-    <?php 
-    if ($loggedIn)
-        echo '<button><a href="/login/logout.php?session=' . $sessionID . '" class="button">Logout</a></button>';
-    else
-        echo '<button><a href="/login" class="button">Login</a></button>';
-    ?> 
-    <button class="button">About Us</button>
-    <button class="button">FAQ</button>
-    <?php if ($isAdmin): ?>
-        <button><a href="admin/dashboard.php" class="button">Admin Dashboard</a></button>
-    <?php endif; ?>
-    <?php if ($loggedIn && $userType === 'dispatcher'): ?>
-        <button><a href="/dispatcher/reported_areas.php" class="button">Go to Dispatcher Dashboard</a></button>
-    <?php endif; ?>
-</div>
-</div>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">Swift Bowsers</a>
+        <div class="navbar-nav">
+            <?php if ($loggedIn): ?>
+                <a href="/login/logout.php?session=<?= $sessionID ?>" class="nav-link">Logout</a>
+            <?php else: ?>
+                <a href="/login" class="nav-link">Login</a>
+            <?php endif; ?>
+            <a href="/report/" class="nav-link nav-report">Report Here</a>
+            <a href="#" class="nav-link">About Us</a>
+            <a href="#" class="nav-link">FAQ</a>
+            <?php if ($isAdmin): ?>
+                <a href="admin/dashboard.php" class="nav-link">Admin Dashboard</a>
+                <a href="/create-bowser" class="nav-link">Add Bowser</a>
+            <?php endif; ?>
+            <?php if ($loggedIn && $userType === 'dispatcher'): ?>
+                <a href="/dispatcher/reported_areas.php" class="nav-link">Dispatcher Dashboard</a>
+            <?php endif; ?>
+        </div>
+    </nav>
 
-    <header style="text-align:left">
-        <h1><b>Swift Bowsers</b>
-        <p>Welcome to Swift Water Bowsers</b></p></h1>
-    <a href="/report/" class="report-btn">Report Here</a>
-		<?php 
-		if ($isAdmin)
-			echo '<a href="/create-bowser" class="report-btn">Add Bowser</a>';
-		?>
-    </header>
-    
-    <section class="search-section">
-    <h2>Find bowsers near by</h2>
-    <div class="search-bar">
-        <input type="text" id="postcode-input" placeholder="Type Here" value="<?= isset($_GET['postcode']) ? htmlspecialchars($_GET['postcode']) : '' ?>">
-        <button class="search-btn">Search</button>
-		</div>
-		<div class="slider-container">
-        <label for="distance" style="color: black;">
-            Distance: <span id="distanceValue"><?= isset($_GET['distance']) ? (int)$_GET['distance'] : 15 ?></span> km
-        </label>
-			<br>
-        <input type="range" id="distance" name="distance" min="1" max="30" 
-            value="<?= isset($_GET['distance']) ? (int)$_GET['distance'] : 15 ?>" 
-            oninput="updateDistanceValue(this.value)">
-    </div>
-</section>
+    <main>
+        <section class="hero">
+            <h1>Find the Closest<br>Water Bowser in Seconds</h1>
+            
+            <div class="search-container">
+                <div class="search-input-group">
+                    <span class="location-icon">📍</span>
+                    <input type="text" id="postcode-input" placeholder="Enter location" 
+                        value="<?= isset($_GET['postcode']) ? htmlspecialchars($_GET['postcode']) : '' ?>">
+                </div>
+                
+                <div class="slider-container">
+                    <label for="distance">
+                        Distance: <span id="distanceValue"><?= isset($_GET['distance']) ? (int)$_GET['distance'] : 15 ?></span> km
+                    </label>
+                    <input type="range" id="distance" name="distance" min="1" max="30" 
+                        value="<?= isset($_GET['distance']) ? (int)$_GET['distance'] : 15 ?>" 
+                        oninput="updateDistanceValue(this.value)">
+                </div>
+                
+                <button class="search-btn">Search</button>
+            </div>
+        </section>
 
-    
-    <section class="main-image">
-<div style="display: flex; justify-content: center; align-items: center;">
-    <div id="map" style="height: 500px; width: 500px;"></div>
-</div>
-        <script>
-    var map = L.map('map').setView([<?= $firstLat ?>, <?= $firstLong ?>], 10); // London
+        <section class="results-section">
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+            
+            <div class="bowser-list">
+                <?php foreach ($items as $item): 
+                    $id = $item['id'];
+                    $name = htmlspecialchars($item['name']);
+                    $postcode = htmlspecialchars($item['postcode']);
+                    $itemImageName = getItemImage($id);
+                ?>
+                <div class="summary-card">
+                    <img src="/create-bowser/uploads/<?= $itemImageName ?>" alt="Bowser Image" class="responsive-img">
+                    <div class="card-info">
+                        <h3><?= $name ?></h3>
+                        <p><?= $postcode ?></p>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+    </main>
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    <script>
+        // Keep all your existing JavaScript for the map
+        var map = L.map('map').setView([<?= $firstLat ?>, <?= $firstLong ?>], 10);
 
-    var locations = [
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-        <?php foreach ($items as $item): 
-            $id = $item['id'];
-            $name = htmlspecialchars($item['name']);
-            $postcode = htmlspecialchars($item['postcode']);
-            $lat = floatval($item['latitude']); // Ensure it's a valid float
-            $long = floatval($item['longitude']); // Ensure it's a valid float
-        ?>
-			,{ 
-        postcode: "<?= $postcode ?>", 
-        lat: <?= $lat ?>, 
-        lon: <?= $long ?>, 
-        label: "<?= addslashes($name . ', ' . $postcode . '<br><br><a href=view?id=' . $id . ' class=\"report-btn\">View</a>') ?>" 
-    }
-        <?php endforeach; ?>
-    ];
-
-    locations.forEach(loc => {
-        L.marker([loc.lat, loc.lon]).addTo(map)
-            .bindPopup(loc.label)
-            .openPopup();
-    });
-</script>
-
-		<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchBtn = document.querySelector(".search-btn");
-        const distanceSlider = document.getElementById("distance");
-        const distanceValue = document.getElementById("distanceValue");
-
-        function updateSearchURL() {
-            let postcode = document.querySelector(".search-bar input").value.trim();
-            let distance = distanceSlider.value;
-
-            let params = new URLSearchParams(window.location.search);
-            if (postcode) {
-                params.set("postcode", postcode);
+        var locations = [
+            <?php foreach ($items as $item): 
+                $id = $item['id'];
+                $name = htmlspecialchars($item['name']);
+                $postcode = htmlspecialchars($item['postcode']);
+                $lat = floatval($item['latitude']);
+                $long = floatval($item['longitude']);
+            ?>
+            ,{ 
+                postcode: "<?= $postcode ?>", 
+                lat: <?= $lat ?>, 
+                lon: <?= $long ?>, 
+                label: "<?= addslashes($name . ', ' . $postcode . '<br><br><a href=view?id=' . $id . ' class=\"report-btn\">View</a>') ?>" 
             }
-            params.set("distance", distance);
-            window.location.href = window.location.pathname + "?" + params.toString();
-        }
+            <?php endforeach; ?>
+        ];
 
-        searchBtn.addEventListener("click", updateSearchURL);
-
-        distanceSlider.addEventListener("input", function () {
-            distanceValue.textContent = this.value;
+        locations.forEach(loc => {
+            L.marker([loc.lat, loc.lon]).addTo(map)
+                .bindPopup(loc.label)
+                .openPopup();
         });
 
-        distanceSlider.addEventListener("change", updateSearchURL);
-    });
-</script>
+        // Keep all your existing event listeners
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchBtn = document.querySelector(".search-btn");
+            const distanceSlider = document.getElementById("distance");
+            const distanceValue = document.getElementById("distanceValue");
 
-		<script>
-    function updateDistanceValue(value) {
-        document.getElementById("distanceValue").textContent = value;
-    }
-</script>
+            function updateSearchURL() {
+                let postcode = document.getElementById("postcode-input").value.trim();
+                let distance = distanceSlider.value;
 
-    </section>
-    
-    <section class="bowser-summary">
-       
-		
-		<?php foreach ($items as $item): 
-    $id = $item['id'];
-    $name = htmlspecialchars($item['name']); // Sanitize output
-    $ownerId = $item['ownerId'];
-    $model = htmlspecialchars($item['model']);
-    $manufacturer_details = htmlspecialchars($item['manufacturer_details']);
-    $itemImageName = getItemImage($id);
-    $ownerName = getUsernameById($ownerId);
-    $available = $item['active'] ?? 0;
-    $postcode = htmlspecialchars($item['postcode']);
-?>
-    <div class="summary-card">
-        <img src="/create-bowser/uploads/<?= $itemImageName ?>" alt="Bowser Image" class="responsive-img">
-        <p><?= $name ?></p>
-		<p><?= $postcode ?></p>
-    </div>
-<?php endforeach; ?>
+                let params = new URLSearchParams(window.location.search);
+                if (postcode) {
+                    params.set("postcode", postcode);
+                }
+                params.set("distance", distance);
+                window.location.href = window.location.pathname + "?" + params.toString();
+            }
 
+            searchBtn.addEventListener("click", updateSearchURL);
+            distanceSlider.addEventListener("change", updateSearchURL);
+        });
 
-		 
-    </section>
+        function updateDistanceValue(value) {
+            document.getElementById("distanceValue").textContent = value;
+        }
+    </script>
 </body>
 </html>
