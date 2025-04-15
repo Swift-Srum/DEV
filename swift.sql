@@ -92,7 +92,15 @@ CREATE TABLE `bowsers` (
   `latitude` text NOT NULL,
   `postcode` text NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
-  `status_maintenance` ENUM('Dispatched', 'On Depot', 'Maintenance Requested', 'Driving') DEFAULT 'On Depot'
+  `status_maintenance` ENUM(
+    'On Depot',
+    'Dispatched',
+    'In Transit',
+    'Maintenance Requested',
+    'Under Maintenance',
+    'Ready',
+    'Out of Service'
+  ) DEFAULT 'On Depot'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -129,8 +137,7 @@ CREATE TABLE `maintain_bowser` (
   `userId` int(11) NOT NULL,
   `descriptionOfWork` text NOT NULL,
   `maintenanceType` text NOT NULL,
-  `dateOfMaintenance` text NOT NULL,
-  `status` text NOT NULL
+  `dateOfMaintenance` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -376,6 +383,23 @@ ALTER TABLE `maintain_bowser`
 --
 ALTER TABLE `uploads`
   ADD CONSTRAINT `uploads_ibfk_1` FOREIGN KEY (`bowserId`) REFERENCES `bowsers` (`id`);
+
+-- Remove the status column from maintain_bowser
+ALTER TABLE `maintain_bowser`
+  DROP COLUMN `status`;
+
+-- Update the bowsers.status_maintenance ENUM to use clearer, more relevant statuses
+ALTER TABLE `bowsers`
+  MODIFY `status_maintenance` ENUM(
+    'On Depot',
+    'Dispatched',
+    'In Transit',
+    'Maintenance Requested',
+    'Under Maintenance',
+    'Ready',
+    'Out of Service'
+  ) DEFAULT 'On Depot';
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

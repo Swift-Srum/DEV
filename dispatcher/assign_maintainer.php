@@ -28,11 +28,11 @@ try {
     
     // Add to maintenance table
     $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    $stmt = $db->prepare("INSERT INTO maintain_bowser (bowserId, userId, descriptionOfWork, maintenanceType, dateOfMaintenance, status) VALUES (?, ?, ?, 'Maintenance', CURRENT_DATE, 'Pending')");
+    $stmt = $db->prepare("INSERT INTO maintain_bowser (bowserId, userId, descriptionOfWork, maintenanceType, dateOfMaintenance) VALUES (?, ?, ?, 'Maintenance', CURRENT_DATE)");
     $stmt->bind_param('iis', $report['bowserId'], $maintainerId, $report['report']);
     $stmt->execute();
     
-    // Update bowser status
+    // Update bowser status to 'Maintenance Requested'
     $stmt = $db->prepare("UPDATE bowsers SET status_maintenance = 'Maintenance Requested' WHERE id = ?");
     $stmt->bind_param('i', $report['bowserId']);
     $stmt->execute();
