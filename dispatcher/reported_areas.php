@@ -113,20 +113,27 @@ function markResolved(reportId) {
         return;
     }
 
-    fetch('resolve_report.php', {
+    console.log('Attempting to resolve report:', reportId);
+
+    fetch('resolve_area.php', {  // Changed from resolve_report.php to resolve_area.php
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `reportId=${reportId}`
+        body: `reportId=${reportId}&type=area`
     })
     .then(response => response.json())
     .then(data => {
+        console.log('Server response:', data);
         if (data.success) {
             location.reload();
         } else {
-            alert('Error resolving report');
+            alert('Error resolving report: ' + (data.message || 'Unknown error'));
         }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        alert('Error resolving report');
     });
 }
 </script>

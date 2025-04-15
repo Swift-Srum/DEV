@@ -15,6 +15,7 @@ if (!$loggedIn || $userType !== 'dispatcher') {
 }
 
 $reportId = $_POST['reportId'] ?? '';
+$type = $_POST['type'] ?? '';
 
 if (empty($reportId)) {
     echo json_encode(['success' => false, 'message' => 'Missing report ID']);
