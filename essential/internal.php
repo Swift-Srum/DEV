@@ -637,24 +637,28 @@ function getUsernameById($idx) //NOT CURRENTLY IN USE
 
 	function getReportedBowsers($urgency = '', $postcode = '') {
 		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-		$sql = "SELECT * FROM bowser_reports WHERE 1=1";
+		$sql = "SELECT br.*, b.postcode 
+				FROM bowser_reports br
+				JOIN bowsers b ON br.bowserId = b.id
+				WHERE 1=1";
 		
+		$params = [];
+		$types = '';
 		if ($urgency) {
-			$sql .= " AND typeOfReport = ?";
+			$sql .= " AND br.typeOfReport = ?";
+			$params[] = $urgency;
+			$types .= 's';
 		}
 		if ($postcode) {
-			$sql .= " AND postcode = ?";
+			$sql .= " AND b.postcode = ?";
+			$params[] = $postcode;
+			$types .= 's';
 		}
-		
+
 		$stmt = $db->prepare($sql);
-		if ($urgency && $postcode) {
-			$stmt->bind_param('ss', $urgency, $postcode);
-		} elseif ($urgency) {
-			$stmt->bind_param('s', $urgency);
-		} elseif ($postcode) {
-			$stmt->bind_param('s', $postcode);
+		if (!empty($params)) {
+			$stmt->bind_param($types, ...$params);
 		}
-		
 		$stmt->execute();
 		return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 	}
