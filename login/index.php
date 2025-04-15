@@ -1,6 +1,35 @@
 <?php
 error_reporting(1);
 include('../essential/backbone.php');
+session_start();
+
+$username = $_COOKIE['user_name'] ?? '';
+$sessionID = $_COOKIE['sessionId'] ?? '';
+
+// Check if already logged in
+$loggedIn = confirmSessionKey($username, $sessionID);
+
+if ($loggedIn) {
+    $userType = getUserType($username);
+
+    if ($userType === 'dispatcher') {
+        header("Location: ../dispatcher/dashboard.php");
+        exit();
+    } elseif ($userType === 'admin') {
+        header("Location: ../admin/dashboard.php");
+        exit();
+    } elseif ($userType === 'maintainer') {
+        header("Location: ../maintainer/dashboard.php");
+        exit();
+    } elseif ($userType === 'driver') {
+        header("Location: ../driver/dashboard.php");
+        exit();
+    } else {
+        header("Location: ../");
+        exit();
+    }
+}
+
 header("X-XSS-Protection: 1; mode=block");
 header("X-Content-Type-Options: nosniff");
 $aes = new AES256;
@@ -59,36 +88,22 @@ $err = $aes->decrypt($err, "secretkey");
       "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
     },
   })
-    .then(response => {
-      // Check if the response is a redirect
+  .then(response => {
       if (response.redirected) {
-        // If redirected, get the new location
-        const redirectLocation = response.url;
-
-        // Redirect the user to the specified location
-        window.location.href = redirectLocation;
+          window.location.href = response.url;
+      } else if (response.ok) {
+          return response.text();
       } else {
-        // Handle other aspects of the response if needed
-        if (response.ok) {
-          return response.text(); // or response.json() if expecting JSON
-        } else {
-          throw new Error(`Failed with status: ${response.status}`);
-        }
+          throw new Error(`Login failed: ${response.status}`);
       }
-    })
-    .then(data => {
-      // Handle the response data if needed
-      console.log(data);
-    })
-    .catch(error => {
-      // Handle fetch errors
-      console.error("Error during fetch:", error);
-    });
-}
-
-
-
+  })
+  .catch(error => {
+      console.error("Error during login:", error);
+      // Optionally display error to user
+      alert("Login failed. Please try again.");
+  });
+  }
 </script>
 	
 </body>     
-</html>  
+</html>

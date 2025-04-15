@@ -1,32 +1,22 @@
 <?php
 
-error_reporting(1);
+session_start();
 include('./essential/backbone.php');
 header("X-XSS-Protection: 1; mode=block");
 header("X-Content-Type-Options: nosniff");
 
-$isAdmin = false;
-if (isset($_COOKIE['user_name']) && isset($_COOKIE['sessionId'])) {
-    $username = $_COOKIE['user_name'];
-    $sessionID = $_COOKIE['sessionId'];
-    $isAdmin = checkIsUserAdmin($username, $sessionID);
-}
+$username = $_COOKIE['user_name'] ?? '';
+$sessionID = $_COOKIE['sessionId'] ?? '';
+$loggedIn = confirmSessionKey($username, $sessionID);
+$userType = $loggedIn ? getUserType($username) : '';
 
-$username = $_COOKIE['user_name'];
-$sessionID = $_COOKIE['sessionId'];
+$isAdmin = $userType === 'admin';
 $idx = getUserID();
-
 
 // AES decryption
 $aes = new AES256;
 $err = $_GET['err'];
 $err = $aes->decrypt($err, "secretkey");
-
-// Validate session and check if the user is an admin
-$loggedIn = confirmSessionKey($username, $sessionID);
-$isAdmin = checkIsUserAdmin($username, $sessionID);
-
-
 
 $postcode = $_GET['postcode'] ?? null;
 if ($postcode) {
@@ -42,9 +32,6 @@ if ($postcode) {
 		$northings = 0;
     }
 }
-
-$userType = $isAdmin ? "Admin" : "Standard";
-$isAdmin = $isAdmin ? 1 : 0;
 
 $distance = $_GET['distance'];
 
@@ -74,8 +61,6 @@ $firstLat = $items[0]['latitude'] ?? '51.5007'; // Set a default value if latitu
 $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longitude is null or not set
 
 
-//var_dump($items);
-
 ?>
 <html lang="en">
 <head>
@@ -88,15 +73,21 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
 </head>
 <body>
 <div class=btn-group>
-	<?php 
-	if ($loggedIn)
-		echo '<button><a href="/login/logout.php?session=' . $sessionID . '" class="button">Logout</a></button>';
-	else
-		echo '<button><a href="/login" class="button">Login</a></button>';
-	?> <button class="button">About Us</button><button class="button">FAQ</button>
+    <?php 
+    if ($loggedIn)
+        echo '<button><a href="/login/logout.php?session=' . $sessionID . '" class="button">Logout</a></button>';
+    else
+        echo '<button><a href="/login" class="button">Login</a></button>';
+    ?> 
+    <button class="button">About Us</button>
+    <button class="button">FAQ</button>
     <?php if ($isAdmin): ?>
-    <button><a href="admin/dashboard.php" class="nav-link">Admin Dashboard</a></button>
+        <button><a href="admin/dashboard.php" class="button">Admin Dashboard</a></button>
     <?php endif; ?>
+    <?php if ($loggedIn && $userType === 'dispatcher'): ?>
+        <button><a href="dispatcher/dashboard.php" class="button">Go to Dispatcher Dashboard</a></button>
+    <?php endif; ?>
+</div>
 </div>
 
     <header style="text-align:left">

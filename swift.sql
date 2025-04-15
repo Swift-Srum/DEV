@@ -91,7 +91,8 @@ CREATE TABLE `bowsers` (
   `longitude` text NOT NULL,
   `latitude` text NOT NULL,
   `postcode` text NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT 1
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `status_maintenance` ENUM('Dispatched', 'On Depot', 'Maintenance Requested', 'Driving') DEFAULT 'On Depot'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -219,6 +220,25 @@ INSERT INTO `verification_codes` (`userId`, `code`, `expires`) VALUES
 ('0', '675156', 1744667171),
 ('4', '334322', 1744667263),
 ('0', '222319', 1744667291);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `drivers_tasks`
+--
+
+CREATE TABLE `drivers_tasks` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `driver_id` int(11) NOT NULL,
+  `area_report_id` int(11) NOT NULL,
+  `bowser_id` int(11) NOT NULL,
+  `status` ENUM('Driving', 'On Depot') DEFAULT 'On Depot',
+  `assigned_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`driver_id`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`area_report_id`) REFERENCES `area_reports` (`id`),
+  FOREIGN KEY (`bowser_id`) REFERENCES `bowsers` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables

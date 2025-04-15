@@ -624,4 +624,91 @@ function getUsernameById($idx) //NOT CURRENTLY IN USE
 
 		return json_encode(["responseCode" => 999, "message" => "err"]);
 	}
+
+	function getUserType($username) {
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		$stmt = $db->prepare("SELECT userType FROM users WHERE username = ?");
+		$stmt->bind_param("s", $username);
+		$stmt->execute();
+		$result = $stmt->get_result();
+		$user = $result->fetch_assoc();
+		return $user ? $user['userType'] : null;
+	}
+
+	function getReportedBowsers($urgency = '', $postcode = '') {
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		$sql = "SELECT * FROM bowser_reports WHERE 1=1";
+		
+		if ($urgency) {
+			$sql .= " AND typeOfReport = ?";
+		}
+		if ($postcode) {
+			$sql .= " AND postcode = ?";
+		}
+		
+		$stmt = $db->prepare($sql);
+		if ($urgency && $postcode) {
+			$stmt->bind_param('ss', $urgency, $postcode);
+		} elseif ($urgency) {
+			$stmt->bind_param('s', $urgency);
+		} elseif ($postcode) {
+			$stmt->bind_param('s', $postcode);
+		}
+		
+		$stmt->execute();
+		return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+	}
+
+	function getReportedAreas($urgency = '', $postcode = '') {
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		$sql = "SELECT * FROM area_reports WHERE 1=1";
+		
+		if ($urgency) {
+			$sql .= " AND reportType = ?";
+		}
+		if ($postcode) {
+			$sql .= " AND postcode = ?";
+		}
+		
+		$stmt = $db->prepare($sql);
+		if ($urgency && $postcode) {
+			$stmt->bind_param('ss', $urgency, $postcode);
+		} elseif ($urgency) {
+			$stmt->bind_param('s', $urgency);
+		} elseif ($postcode) {
+			$stmt->bind_param('s', $postcode);
+		}
+		
+		$stmt->execute();
+		return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+	}
+
+	function getMaintainers() {
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		$stmt = $db->prepare("SELECT id, username FROM users WHERE userType = 'maintainer'");
+		$stmt->execute();
+		return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+	}
+
+	function getDrivers() {
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		$stmt = $db->prepare("SELECT id, username FROM users WHERE userType = 'driver'");
+		$stmt->execute();
+		return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+	}
+
+	function getAvailableBowser() {
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		$stmt = $db->prepare("SELECT * FROM bowsers WHERE status_maintenance = 'On Depot' LIMIT 1");
+		$stmt->execute();
+		return $stmt->get_result()->fetch_assoc();
+	}
+
+	function getBowserReport($reportId) {
+		$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		$stmt = $db->prepare("SELECT * FROM bowser_reports WHERE id = ?");
+		$stmt->bind_param('i', $reportId);
+		$stmt->execute();
+		return $stmt->get_result()->fetch_assoc();
+	}
 ?>
