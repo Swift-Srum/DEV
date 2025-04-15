@@ -25,37 +25,4 @@
     //echo $checksum;
 
 
-    /*ill leave this for now */
-    function getReportedBowsers($urgency = '', $postcode = '') {
-        global $conn;
-        
-        $sql = "SELECT br.*, b.postcode 
-                FROM bowser_reports br
-                JOIN bowsers b ON br.bowserId = b.id
-                WHERE 1=1";
-        
-        if (!empty($urgency)) {
-            $sql .= " AND br.typeOfReport = ?";
-        }
-        
-        if (!empty($postcode)) {
-            $sql .= " AND b.postcode LIKE ?";
-        }
-        
-        $stmt = $conn->prepare($sql);
-        
-        if (!empty($urgency) && !empty($postcode)) {
-            $postcodeLike = "%$postcode%";
-            $stmt->bind_param("ss", $urgency, $postcodeLike);
-        } elseif (!empty($urgency)) {
-            $stmt->bind_param("s", $urgency);
-        } elseif (!empty($postcode)) {
-            $postcodeLike = "%$postcode%";
-            $stmt->bind_param("s", $postcodeLike);
-        }
-        
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
-?>
+    
