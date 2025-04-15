@@ -16,7 +16,7 @@ $confirmPassword = $_POST['confirm'];
 
 if($password != $confirmPassword){
 	
-	header("Location: ../forgot-pass/reset_page.php/?err=" . urlencode($aes->encrypt("Passwords do not match", "secretkey")));
+	header("Location: ../forgot-pass/reset_page.php?email=" . $email . "&err=" . urlencode($aes->encrypt("Passwords do not match.", "secretkey")));
     echo 'responseCode=1';
 	exit();
 }
@@ -32,7 +32,7 @@ $valid = checkCodeValid($userId, $code, $timestamp);
 if($valid){
 	$password = hash('sha256', $password); // Create a SHA256 hash of the password
 	resetPassword($userId, $password);
-	header("Location: ../forgot-pass/reset_page.php/?err=" . urlencode($aes->encrypt("Password reset", "secretkey")));
+	header("Location: ../login/?err=" . urlencode($aes->encrypt("Password reset successfully.", "secretkey")));
     echo 'responseCode=1';
 }
 else{
