@@ -6,75 +6,80 @@ session_start();
 $username = $_COOKIE['user_name'] ?? '';
 $sessionID = $_COOKIE['sessionId'] ?? '';
 
-// Check if user is logged in and is a dispatcher
+// Check if user is logged in and is a maintainer
 $loggedIn = confirmSessionKey($username, $sessionID);
 $userType = getUserType($username);
 
-if (!$loggedIn || $userType !== 'dispatcher') {
+if (!$loggedIn || $userType !== 'maintainer') {
     header("Location: ../login/");
     exit();
 }
 
-// Get filter values
-$urgency = $_GET['urgency'] ?? '';
-$postcode = $_GET['postcode'] ?? '';
+// Get maintenance records
+$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+// Update the query to include bowser name, postcode, and bowser ID
+$query = "SELECT mb.*, b.status_maintenance, b.name AS bowser_name, b.postcode, b.id AS bowser_id 
+          FROM maintain_bowser mb 
+          JOIN bowsers b ON mb.bowserId = b.id 
+          WHERE mb.userId = ?";
+$stmt = $db->prepare($query);
+$userId = getUserID();
+$stmt->bind_param('i', $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+$maintenanceRecords = $result->fetch_all(MYSQLI_ASSOC);
 
-$reports = getReportedAreas($urgency, $postcode);
-$drivers = getDrivers();
+// Define maintenance status options
+$maintenanceStatuses = [
+    'Maintenance Requested',
+    'Under Maintenance',
+    'Ready',
+    'Out of Service'
+];
 
-include('../header.php');
+include('../maintainer/header.php');
 ?>
 
 <div class="content-area">
     <div class="content-header">
-        <h1>Reported Areas</h1>
+        <h1>Maintenance Dashboard</h1>
     </div>
 
     <div class="content-body">
-        <div class="filters">
-            <form method="GET" class="filter-form">
-                <select name="urgency">
-                    <option value="">All Urgencies</option>
-                    <option value="Urgent" <?= $urgency === 'Urgent' ? 'selected' : '' ?>>Urgent</option>
-                    <option value="Medium" <?= $urgency === 'Medium' ? 'selected' : '' ?>>Medium</option>
-                    <option value="Low" <?= $urgency === 'Low' ? 'selected' : '' ?>>Low</option>
-                </select>
-                
-                <input type="text" name="postcode" placeholder="Postcode" value="<?= htmlspecialchars($postcode) ?>">
-                <button type="submit" class="btn-primary">Filter</button>
-            </form>
-        </div>
-
-        <!-- Reports Count -->
-        <div class="reports-count">
-            Total Reports: <?= count($reports) ?>
-        </div>
-
-        <!-- Reports Table -->
-        <table class="reports-table">
+        <table class="maintenance-table">
             <thead>
                 <tr>
-                    <th>Report</th>
-                    <th>Type</th>
-                    <th>Postcode</th>
+                    <th>Bowser Name</th>
+                    <th>Location</th>
+                    <th>Description of Work</th>
+                    <th>Date of Maintenance</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($reports as $report): ?>
-                <tr>
-                    <td><?= htmlspecialchars($report['report']) ?></td>
-                    <td><?= htmlspecialchars($report['reportType']) ?></td>
-                    <td><?= htmlspecialchars($report['postcode']) ?></td>
+                <?php foreach ($maintenanceRecords as $record): ?>
+                <tr data-id="<?= $record['id'] ?>" data-bowser-id="<?= $record['bowser_id'] ?>">
+                    <td><?= htmlspecialchars($record['bowser_name']) ?></td>
+                    <td><?= htmlspecialchars($record['postcode']) ?></td>
                     <td>
-                        <select class="driver-select" data-report-id="<?= $report['id'] ?>">
-                            <option value="">Select Driver</option>
-                            <?php foreach ($drivers as $driver): ?>
-                            <option value="<?= $driver['id'] ?>"><?= htmlspecialchars($driver['username']) ?></option>
+                        <textarea class="description-edit"><?= htmlspecialchars($record['descriptionOfWork']) ?></textarea>
+                    </td>
+                    <td>
+                        <input type="date" class="date-edit" value="<?= htmlspecialchars($record['dateOfMaintenance']) ?>">
+                    </td>
+                    <td>
+                        <select class="status-edit">
+                            <?php foreach ($maintenanceStatuses as $status): ?>
+                                <option value="<?= htmlspecialchars($status) ?>" 
+                                        <?= $record['status_maintenance'] === $status ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($status) ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
-                        <button onclick="assignToDriver(<?= $report['id'] ?>)">Assign</button>
-                        <button onclick="markResolved(<?= $report['id'] ?>)">Resolve</button>
+                    </td>
+                    <td>
+                        <button onclick="updateMaintenance(<?= $record['id'] ?>)">Save Changes</button>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -84,58 +89,27 @@ include('../header.php');
 </div>
 
 <script>
-function assignToDriver(reportId) {
-    const driverId = document.querySelector(`select[data-report-id="${reportId}"]`).value;
-    if (!driverId) {
-        alert('Please select a driver');
-        return;
-    }
+function updateMaintenance(id) {
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    const bowserId = row.dataset.bowserId;
+    const description = row.querySelector('.description-edit').value;
+    const date = row.querySelector('.date-edit').value;
+    const status = row.querySelector('.status-edit').value;
 
-    fetch('assign_driver.php', {
+    fetch('update_maintenance.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `reportId=${reportId}&driverId=${driverId}`
+        body: `id=${id}&bowserId=${bowserId}&description=${encodeURIComponent(description)}&date=${date}&status=${status}`
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload();
+            alert('Maintenance record updated successfully');
         } else {
-            alert('Error assigning driver');
+            alert('Error updating maintenance record: ' + data.message);
         }
-    });
-}
-
-function markResolved(reportId) {
-    if (!confirm('Are you sure you want to mark this report as resolved?')) {
-        return;
-    }
-
-    console.log('Attempting to resolve report:', reportId);
-
-    fetch('resolve_area.php', {  // Changed from resolve_report.php to resolve_area.php
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `reportId=${reportId}&type=area`
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Server response:', data);
-        if (data.success) {
-            location.reload();
-        } else {
-            alert('Error resolving report: ' + (data.message || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-        alert('Error resolving report');
     });
 }
 </script>
-</body>
-</html>

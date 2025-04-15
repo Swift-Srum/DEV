@@ -19,9 +19,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 <h2>Dashboard</h2>
             </div>
             <ul class="nav-links">
-                <li><a href="../" class="<?= $currentPage == 'index.php' ? 'active' : '' ?>">Dashboard Home</a></li>
-                <li><a href="../dispatcher/reported_areas.php" class="<?= $currentPage == 'reported_areas.php' ? 'active' : '' ?>">Reported Areas</a></li>
-                <li><a href="../dispatcher/reported_bowsers.php" class="<?= $currentPage == 'reported_bowsers.php' ? 'active' : '' ?>">Reported Bowsers</a></li>
+                <li><a href="../" class="<?= $currentPage == 'index.php' ? 'active' : '' ?>">Home</a></li>
                 <!-- Add other navigation items as needed -->
             </ul>
         </nav>
