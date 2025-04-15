@@ -34,9 +34,9 @@ if(!$codeExists){
     "Swift Bowsers",
     $email,
     "Verification Code",
-    "Swift Bowsers Verification Code",
+    "Swift Bowsers Password Reset Request",
     "This is a plain text message.",
-    "<h1>Your code is: " . $code . "</h1><p>Thank you for using Swift Bowsers. Before you can start using our service, please enter the verification code above into the verification box. The code will be valid for 2 minutes.</p>"
+    "<h1>Your code is: " . $code . "</h1><p>A password reset request was made for your account, please enter the verification code to reset your password. If the request was not made by you, do not share this code with anybody. The code will be valid for 2 minutes.</p>"
 );
 	
 }
@@ -49,14 +49,14 @@ if(!$codeExists){
 <html>   
 <head>  
 <meta name="viewport" content="width=device-width, initial-scale=1">  
-<title>Verify Email</title>  
+<title>Reset Password</title>  
 <link rel="stylesheet" href="/assets/css/style_form.css">  
 </head>    
 
 <body>    
 <div id = "main">
 <div class="left-column">
-  <center><h1>Please verify your email</h1></center>   
+  <center><h1>Please enter the code to verify your email.</h1></center>   
 
   <form>  
     <div class="container">   
@@ -69,7 +69,7 @@ if(!$codeExists){
 	  <label>Confirm New Password:</label>   
       <input type="password" id="confirm" placeholder="Confirm New Password" name="confirm" required>
 
-      <button type="button" onclick="verify();">Verify</button>
+      <button type="button" onclick="verify();">Reset Password</button>
       <a href="/"><button type="button" class="cancelbtn">Cancel</button></a> 
 	  
     </div>   
