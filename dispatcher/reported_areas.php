@@ -19,35 +19,31 @@ if (!$loggedIn || $userType !== 'dispatcher') {
 $urgency = $_GET['urgency'] ?? '';
 $postcode = $_GET['postcode'] ?? '';
 
-// Get reported areas based on filters
 $reports = getReportedAreas($urgency, $postcode);
-
-// Get drivers list
 $drivers = getDrivers();
+
+include('../essential/header.php');
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Reported Areas</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-</head>
-<body>
-    <div class="container">
+<div class="content-area">
+    <div class="content-header">
         <h1>Reported Areas</h1>
+    </div>
 
-        <!-- Filter Form -->
-        <form method="GET" class="filter-form">
-            <select name="urgency">
-                <option value="">All Urgencies</option>
-                <option value="Urgent" <?= $urgency === 'Urgent' ? 'selected' : '' ?>>Urgent</option>
-                <option value="Medium" <?= $urgency === 'Medium' ? 'selected' : '' ?>>Medium</option>
-                <option value="Low" <?= $urgency === 'Low' ? 'selected' : '' ?>>Low</option>
-            </select>
-            
-            <input type="text" name="postcode" placeholder="Postcode" value="<?= htmlspecialchars($postcode) ?>">
-            <button type="submit">Filter</button>
-        </form>
+    <div class="content-body">
+        <div class="filters">
+            <form method="GET" class="filter-form">
+                <select name="urgency">
+                    <option value="">All Urgencies</option>
+                    <option value="Urgent" <?= $urgency === 'Urgent' ? 'selected' : '' ?>>Urgent</option>
+                    <option value="Medium" <?= $urgency === 'Medium' ? 'selected' : '' ?>>Medium</option>
+                    <option value="Low" <?= $urgency === 'Low' ? 'selected' : '' ?>>Low</option>
+                </select>
+                
+                <input type="text" name="postcode" placeholder="Postcode" value="<?= htmlspecialchars($postcode) ?>">
+                <button type="submit" class="btn-primary">Filter</button>
+            </form>
+        </div>
 
         <!-- Reports Count -->
         <div class="reports-count">
@@ -58,7 +54,6 @@ $drivers = getDrivers();
         <table class="reports-table">
             <thead>
                 <tr>
-                    <th>Area</th>
                     <th>Report</th>
                     <th>Type</th>
                     <th>Postcode</th>
@@ -68,7 +63,6 @@ $drivers = getDrivers();
             <tbody>
                 <?php foreach ($reports as $report): ?>
                 <tr>
-                    <td><?= htmlspecialchars($report['area']) ?></td>
                     <td><?= htmlspecialchars($report['report']) ?></td>
                     <td><?= htmlspecialchars($report['reportType']) ?></td>
                     <td><?= htmlspecialchars($report['postcode']) ?></td>
@@ -80,37 +74,61 @@ $drivers = getDrivers();
                             <?php endforeach; ?>
                         </select>
                         <button onclick="assignToDriver(<?= $report['id'] ?>)">Assign</button>
+                        <button onclick="markResolved(<?= $report['id'] ?>)">Resolve</button>
                     </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
+</div>
 
-    <script>
-    function assignToDriver(reportId) {
-        const driverId = document.querySelector(`select[data-report-id="${reportId}"]`).value;
-        if (!driverId) {
-            alert('Please select a driver');
-            return;
-        }
-
-        fetch('assign_driver.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `reportId=${reportId}&driverId=${driverId}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Error assigning driver');
-            }
-        });
+<script>
+function assignToDriver(reportId) {
+    const driverId = document.querySelector(`select[data-report-id="${reportId}"]`).value;
+    if (!driverId) {
+        alert('Please select a driver');
+        return;
     }
-    </script>
+
+    fetch('assign_driver.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `reportId=${reportId}&driverId=${driverId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error assigning driver');
+        }
+    });
+}
+
+function markResolved(reportId) {
+    if (!confirm('Are you sure you want to mark this report as resolved?')) {
+        return;
+    }
+
+    fetch('resolve_report.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `reportId=${reportId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error resolving report');
+        }
+    });
+}
+</script>
 </body>
 </html>

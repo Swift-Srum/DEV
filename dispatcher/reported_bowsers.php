@@ -24,30 +24,29 @@ $reports = getReportedBowsers($urgency, $postcode);
 
 // Get maintainers list
 $maintainers = getMaintainers();
+
+include('../essential/header.php');
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Reported Bowsers</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-</head>
-<body>
-    <div class="container">
+<div class="content-area">
+    <div class="content-header">
         <h1>Reported Bowsers</h1>
+    </div>
 
-        <!-- Filter Form -->
-        <form method="GET" class="filter-form">
-            <select name="urgency">
-                <option value="">All Urgencies</option>
-                <option value="Urgent" <?= $urgency === 'Urgent' ? 'selected' : '' ?>>Urgent</option>
-                <option value="Medium" <?= $urgency === 'Medium' ? 'selected' : '' ?>>Medium</option>
-                <option value="Low" <?= $urgency === 'Low' ? 'selected' : '' ?>>Low</option>
-            </select>
-            
-            <input type="text" name="postcode" placeholder="Postcode" value="<?= htmlspecialchars($postcode) ?>">
-            <button type="submit">Filter</button>
-        </form>
+    <div class="content-body">
+        <div class="filters">
+            <form method="GET" class="filter-form">
+                <select name="urgency">
+                    <option value="">All Urgencies</option>
+                    <option value="Urgent" <?= $urgency === 'Urgent' ? 'selected' : '' ?>>Urgent</option>
+                    <option value="Medium" <?= $urgency === 'Medium' ? 'selected' : '' ?>>Medium</option>
+                    <option value="Low" <?= $urgency === 'Low' ? 'selected' : '' ?>>Low</option>
+                </select>
+                
+                <input type="text" name="postcode" placeholder="Postcode" value="<?= htmlspecialchars($postcode) ?>">
+                <button type="submit" class="btn-primary">Filter</button>
+            </form>
+        </div>
 
         <!-- Reports Count -->
         <div class="reports-count">
@@ -58,7 +57,6 @@ $maintainers = getMaintainers();
         <table class="reports-table">
             <thead>
                 <tr>
-                    <th>Bowser ID</th>
                     <th>Report</th>
                     <th>Type</th>
                     <th>Postcode</th>
@@ -68,7 +66,6 @@ $maintainers = getMaintainers();
             <tbody>
                 <?php foreach ($reports as $report): ?>
                 <tr>
-                    <td><?= htmlspecialchars($report['bowserId']) ?></td>
                     <td><?= htmlspecialchars($report['report']) ?></td>
                     <td><?= htmlspecialchars($report['typeOfReport']) ?></td>
                     <td><?= htmlspecialchars($report['postcode']) ?></td>
@@ -87,53 +84,54 @@ $maintainers = getMaintainers();
             </tbody>
         </table>
     </div>
+</div>
 
-    <script>
-    function assignToMaintainer(reportId) {
-        const maintainerId = document.querySelector(`select[data-report-id="${reportId}"]`).value;
-        if (!maintainerId) {
-            alert('Please select a maintainer');
-            return;
-        }
-
-        fetch('assign_maintainer.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `reportId=${reportId}&maintainerId=${maintainerId}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Error assigning maintainer');
-            }
-        });
+<script>
+function assignToMaintainer(reportId) {
+    const maintainerId = document.querySelector(`select[data-report-id="${reportId}"]`).value;
+    if (!maintainerId) {
+        alert('Please select a maintainer');
+        return;
     }
 
-    function markResolved(reportId) {
-        if (!confirm('Are you sure you want to mark this report as resolved?')) {
-            return;
+    fetch('assign_maintainer.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `reportId=${reportId}&maintainerId=${maintainerId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error assigning maintainer');
         }
+    });
+}
 
-        fetch('resolve_report.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `reportId=${reportId}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert('Error resolving report');
-            }
-        });
+function markResolved(reportId) {
+    if (!confirm('Are you sure you want to mark this report as resolved?')) {
+        return;
     }
-    </script>
+
+    fetch('resolve_report.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `reportId=${reportId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error resolving report');
+        }
+    });
+}
+</script>
 </body>
 </html>
