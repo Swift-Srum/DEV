@@ -2,35 +2,76 @@ async function editBowser(id) {
     const row = document.querySelector(`tr[data-id="${id}"]`);
     
     try {
-        const response = await fetch(`/admin/get-bowser.php?id=${id}`);
-        const bowser = await response.json();
+        // Get current bowser data from the table row
+        const name = row.cells[0].textContent;
+        const model = row.cells[1].textContent;
+        const capacity = row.cells[2].textContent;
+        const supplier = row.cells[3].textContent;
+        const postcode = row.cells[6].textContent;
+        const status = row.cells[7].textContent;
+
+        // Show prompts with current values
+        const newName = prompt('Enter new name:', name);
+        if (!newName) return;
+
+        const newModel = prompt('Enter new model:', model);
+        if (!newModel) return;
+
+        const newCapacity = prompt('Enter new capacity (L):', capacity);
+        if (!newCapacity) return;
+
+        const newSupplier = prompt('Enter new supplier:', supplier);
+        if (!newSupplier) return;
+
+        const newPostcode = prompt('Enter new postcode:', postcode);
+        if (!newPostcode) return;
+
+        const validStatuses = ['On Depot', 'Dispatched', 'In Transit', 
+            'Maintenance Requested', 'Under Maintenance', 'Ready', 'Out of Service'];
+        const newStatus = prompt(
+            `Enter new status:\nValid options: ${validStatuses.join(', ')}`, 
+            status
+        );
+        if (!newStatus || !validStatuses.includes(newStatus)) {
+            alert('Invalid status selected');
+            return;
+        }
+
+        // Send update request
+        const response = await fetch('../admin/update-bowser.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                id: id,
+                name: newName,
+                model: newModel,
+                capacity: newCapacity,
+                supplier: newSupplier,
+                postcode: newPostcode,
+                status: newStatus
+            })
+        });
+
+        const result = await response.json();
         
-        // Show edit form with bowser details
-        const name = prompt('Enter new name:', bowser.name);
-        const model = prompt('Enter new model:', bowser.model);
-        const capacity = prompt('Enter new capacity (L):', bowser.capacity_litres);
-        const supplier = prompt('Enter new supplier:', bowser.supplier_company);
-        const postcode = prompt('Enter new postcode:', bowser.postcode);
-        const status = prompt('Enter new status (On Depot/Dispatched/In Transit/Maintenance Requested/Under Maintenance/Ready/Out of Service):', bowser.status_maintenance);
-        
-        if (name && model && capacity && supplier && postcode && status) {
-            const response = await fetch('/admin/update-bowser.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `id=${id}&name=${encodeURIComponent(name)}&model=${encodeURIComponent(model)}&capacity=${encodeURIComponent(capacity)}&supplier=${encodeURIComponent(supplier)}&postcode=${encodeURIComponent(postcode)}&status=${encodeURIComponent(status)}`
-            });
+        if (response.ok && result.success) {
+            // Update the table row with new values
+            row.cells[0].textContent = newName;
+            row.cells[1].textContent = newModel;
+            row.cells[2].textContent = newCapacity;
+            row.cells[3].textContent = newSupplier;
+            row.cells[6].textContent = newPostcode;
+            row.cells[7].textContent = newStatus;
             
-            if (response.ok) {
-                location.reload();
-            } else {
-                alert('Failed to update bowser');
-            }
+            alert('Bowser updated successfully');
+        } else {
+            throw new Error(result.error || 'Failed to update bowser');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred');
+        alert(error.message || 'An error occurred while updating the bowser');
     }
 }
 

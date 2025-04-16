@@ -16,61 +16,102 @@ if (!$loggedIn || !$isAdmin) {
     exit();
 }
 
-// Get filter parameters
-$model = $_GET['model'] ?? '';
-$capacity = $_GET['capacity'] ?? '';
-$supplier = $_GET['supplier'] ?? '';
-$dateReceived = $_GET['date_received'] ?? '';
-$dateReturned = $_GET['date_returned'] ?? '';
-$postcode = $_GET['postcode'] ?? '';
-$active = $_GET['active'] ?? '';
-$status = $_GET['status'] ?? '';
+try {
+    // Get filter parameters
+    $model = trim($_GET['model'] ?? '');
+    $capacity = trim($_GET['capacity'] ?? '');
+    $supplier = trim($_GET['supplier'] ?? '');
+    $dateReceived = trim($_GET['date_received'] ?? '');
+    $dateReturned = trim($_GET['date_returned'] ?? '');
+    $postcode = trim($_GET['postcode'] ?? '');
+    $active = isset($_GET['active']) ? trim($_GET['active']) : '';
+    $status = trim($_GET['status'] ?? '');
 
-// Build query
-$query = "SELECT * FROM bowsers WHERE 1=1";
-$params = array();
+    // Build query
+    $query = "SELECT * FROM bowsers WHERE 1=1";
+    $params = array();
+    $types = "";
 
-if ($model) {
-    $query .= " AND model LIKE ?";
-    $params[] = "%$model%";
-}
-if ($capacity) {
-    $query .= " AND capacity_litres = ?";
-    $params[] = $capacity;
-}
-if ($supplier) {
-    $query .= " AND supplier_company LIKE ?";
-    $params[] = "%$supplier%";
-}
-if ($dateReceived) {
-    $query .= " AND date_received = ?";
-    $params[] = $dateReceived;
-}
-if ($dateReturned) {
-    $query .= " AND date_returned = ?";
-    $params[] = $dateReturned;
-}
-if ($postcode) {
-    $query .= " AND postcode LIKE ?";
-    $params[] = "%$postcode%";
-}
-if ($active !== '') {
-    $query .= " AND active = ?";
-    $params[] = $active;
-}
-if ($status) {
-    $query .= " AND status_maintenance = ?";
-    $params[] = $status;
-}
+    if (!empty($model)) {
+        $query .= " AND LOWER(model) LIKE LOWER(?)";
+        $params[] = "%{$model}%";
+        $types .= "s";
+    }
+    if (!empty($capacity)) {
+        $query .= " AND capacity_litres = ?";
+        $params[] = $capacity;
+        $types .= "s";
+    }
+    if (!empty($supplier)) {
+        $query .= " AND LOWER(supplier_company) LIKE LOWER(?)";
+        $params[] = "%{$supplier}%";
+        $types .= "s";
+    }
+    if (!empty($dateReceived)) {
+        $query .= " AND date_received = ?";
+        $params[] = $dateReceived;
+        $types .= "s";
+    }
+    if (!empty($dateReturned)) {
+        $query .= " AND date_returned = ?";
+        $params[] = $dateReturned;
+        $types .= "s";
+    }
+    if (!empty($postcode)) {
+        $query .= " AND LOWER(postcode) LIKE LOWER(?)";
+        $params[] = "%{$postcode}%";
+        $types .= "s";
+    }
+    if ($active !== '') {
+        $query .= " AND active = ?";
+        $params[] = $active;
+        $types .= "i";
+    }
+    if (!empty($status)) {
+        $query .= " AND status_maintenance = ?";
+        $params[] = $status;
+        $types .= "s";
+    }
 
-// Get bowsers
-$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-$stmt = $db->prepare($query);
-if (!empty($params)) {
-    $stmt->bind_param(str_repeat('s', count($params)), ...$params);
+    // Add ORDER BY clause
+    $query .= " ORDER BY name ASC";
+
+    // Get bowsers
+    $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    
+    if ($db->connect_error) {
+        throw new Exception("Connection failed: " . $db->connect_error);
+    }
+
+    $stmt = $db->prepare($query);
+    
+    if (!$stmt) {
+        throw new Exception("Prepare failed: " . $db->error);
+    }
+
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+
+    if (!$stmt->execute()) {
+        throw new Exception("Execute failed: " . $stmt->error);
+    }
+
+    $result = $stmt->get_result();
+    $bowsers = $result->fetch_all(MYSQLI_ASSOC);
+
+} catch (Exception $e) {
+    // Log the error and show a user-friendly message
+    error_log($e->getMessage());
+    $error_message = "An error occurred while retrieving the bowsers. Please try again later.";
+} finally {
+    if (isset($stmt)) {
+        $stmt->close();
+    }
+    if (isset($db)) {
+        $db->close();
+    }
 }
-$stmt->execute();
-$bowsers = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -88,26 +129,23 @@ $bowsers = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             <nav>
                 <a href="../" class="nav-link">Home</a>
                 <a href="../create-bowser/" class="nav-link">Add Bowser</a>
-                <a href="../login/logout.php?session=<?php echo $_COOKIE['sessionId']; ?>" class="nav-link">Logout</a>
+                <a href="../login/logout.php?session=<?php echo htmlspecialchars($sessionID); ?>" class="nav-link">Logout</a>
             </nav>
         </header>
 
         <main>
+            <?php if (isset($error_message)): ?>
+                <div class="error-message"><?php echo htmlspecialchars($error_message); ?></div>
+            <?php endif; ?>
+
             <section class="filter-section">
                 <h2>Filter Bowsers</h2>
                 <form id="filterForm" method="GET">
                     <div class="filter-grid">
-                        <div class="filter-item">
-                            <label for="model">Model:</label>
-                            <input type="text" id="model" name="model" value="<?= htmlspecialchars($model) ?>">
-                        </div>
+
                         <div class="filter-item">
                             <label for="capacity">Capacity (L):</label>
                             <input type="text" id="capacity" name="capacity" value="<?= htmlspecialchars($capacity) ?>">
-                        </div>
-                        <div class="filter-item">
-                            <label for="supplier">Supplier:</label>
-                            <input type="text" id="supplier" name="supplier" value="<?= htmlspecialchars($supplier) ?>">
                         </div>
                         <div class="filter-item">
                             <label for="date_received">Date Received:</label>
@@ -152,41 +190,45 @@ $bowsers = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
             <section class="bowsers-list">
                 <h2>Bowsers List</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Model</th>
-                            <th>Capacity (L)</th>
-                            <th>Supplier</th>
-                            <th>Date Received</th>
-                            <th>Date Returned</th>
-                            <th>Postcode</th>
-                            <th>Status</th>
-                            <th>Active</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($bowsers as $bowser): ?>
-                        <tr data-id="<?= htmlspecialchars($bowser['id']) ?>">
-                            <td><?= htmlspecialchars($bowser['name']) ?></td>
-                            <td><?= htmlspecialchars($bowser['model']) ?></td>
-                            <td><?= htmlspecialchars($bowser['capacity_litres']) ?></td>
-                            <td><?= htmlspecialchars($bowser['supplier_company']) ?></td>
-                            <td><?= htmlspecialchars($bowser['date_received']) ?></td>
-                            <td><?= htmlspecialchars($bowser['date_returned']) ?></td>
-                            <td><?= htmlspecialchars($bowser['postcode']) ?></td>
-                            <td><?= htmlspecialchars($bowser['status_maintenance']) ?></td>
-                            <td><?= $bowser['active'] ? 'Yes' : 'No' ?></td>
-                            <td>
-                                <button onclick="editBowser(<?= $bowser['id'] ?>)">Edit</button>
-                                <button onclick="deleteBowser(<?= $bowser['id'] ?>)">Delete</button>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                <?php if (empty($bowsers)): ?>
+                    <p class="no-results">No bowsers found matching your criteria.</p>
+                <?php else: ?>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Model</th>
+                                <th>Capacity (L)</th>
+                                <th>Supplier</th>
+                                <th>Date Received</th>
+                                <th>Date Returned</th>
+                                <th>Postcode</th>
+                                <th>Status</th>
+                                <th>Active</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($bowsers as $bowser): ?>
+                            <tr data-id="<?= htmlspecialchars($bowser['id']) ?>">
+                                <td><?= htmlspecialchars($bowser['name']) ?></td>
+                                <td><?= htmlspecialchars($bowser['model']) ?></td>
+                                <td><?= htmlspecialchars($bowser['capacity_litres']) ?></td>
+                                <td><?= htmlspecialchars($bowser['supplier_company']) ?></td>
+                                <td><?= htmlspecialchars($bowser['date_received']) ?></td>
+                                <td><?= htmlspecialchars($bowser['date_returned']) ?></td>
+                                <td><?= htmlspecialchars($bowser['postcode']) ?></td>
+                                <td><?= htmlspecialchars($bowser['status_maintenance']) ?></td>
+                                <td><?= $bowser['active'] ? 'Yes' : 'No' ?></td>
+                                <td>
+                                    <button onclick="editBowser(<?= $bowser['id'] ?>)">Edit</button>
+                                    <button onclick="deleteBowser(<?= $bowser['id'] ?>)">Delete</button>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
             </section>
         </main>
     </div>
