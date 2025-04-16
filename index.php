@@ -85,7 +85,6 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
             <a href="#" class="nav-link">FAQ</a>
             <?php if ($isAdmin): ?>
                 <a href="admin/dashboard.php" class="nav-link">Admin Dashboard</a>
-                <a href="/create-bowser" class="nav-link">Add Bowser</a>
             <?php endif; ?>
             <?php if ($loggedIn && $userType === 'dispatcher'): ?>
                 <a href="/dispatcher/reported_areas.php" class="nav-link">Dispatcher Dashboard</a>
@@ -134,6 +133,7 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
                     <div class="card-info">
                         <h3><?= $name ?></h3>
                         <p><?= $postcode ?></p>
+                        <a href="view?id=<?= $id ?>" class="view-btn">View</a>
                     </div>
                 </div>
                 <?php endforeach; ?>

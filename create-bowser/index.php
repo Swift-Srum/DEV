@@ -22,17 +22,26 @@ if (!$isAdmin) {
 }
 ?>
 
-
-<!DOCTYPE html>   
-<html>   
-<head>  
-<meta name="viewport" content="width=device-width, initial-scale=1">  
-<title> Create Item </title>  
-<link rel="stylesheet" href="/assets/css/style_create.css">  
-
-</head>    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/style_create.css">
+</head>
+<body>
+    <div class="admin-container">
+    <header>
+            <h1>Admin Dashboard</h1>
+            <nav>
+                <a href="../" class="nav-link">Home</a>
+                <a href="../admin/dashboard.php" class="nav-link">Staff Control</a>
+                <a href="../login/logout.php?session=<?php echo $_COOKIE['sessionId']; ?>" class="nav-link">Logout</a>
+            </nav>
+        </header>
 <body>    
-  <center><h1>Create Item</h1></center>   
+  <center><h1>Add Bowser</h1></center>   
   <form>  
     <div class="container">   
   <label>Name (e.g. Cool Bowser):</label>   
@@ -256,4 +265,4 @@ function submitForm() {
 
 
 </script>     
-</html>  
+</html>

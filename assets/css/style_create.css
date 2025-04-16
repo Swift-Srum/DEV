@@ -1,69 +1,143 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-image: url("/assets/back.jpg");
-    background-size: cover; /* or use 'contain' based on your preference */
-    background-repeat: no-repeat; /* Prevents the image from repeating */
-    background-attachment: fixed; /* Keeps the background fixed during scrolling */
-    background-color: #101210;
+    font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
-    color: #ffffff; /* Dark gray text color */
-}
-
-button {
-    background-color: #007bff; /* Purple button background */
-    width: 100%;
-    color: #ffffff; /* White text color */
-    padding: 15px;
-    margin: 10px 0;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px; /* Add border-radius for a softer button appearance */
-}
-
-form {
-    border: 3px solid #007bff; /* Purple border */
-    max-width: 900px;
-    margin: 0 auto;
     padding: 20px;
-    background-color: #101210; /* White background */
-    border-radius: 10px; /* Add border-radius for a softer form appearance */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow for depth */
-}
-
-input[type=text],
-input[type=password] {
-    width: 100%;
-    margin: 8px 0;
-    padding: 12px 15px; /* Adjusted padding for a more compact look */
-    display: inline-block;
-    border: 2px solid #6a0dad; /* Purple border */
-    box-sizing: border-box;
-    border-radius: 5px;
-}
-
-button:hover {
-    opacity: 0.8; /* Slightly increase opacity on hover */
-}
-
-.cancelbtn {
-    width: auto;
-    padding: 10px 18px;
-    margin: 10px 5px;
-    background-color: #007bff; /* Dark purple cancel button */
-    border-radius: 5px;
+    background-color: #fff;
 }
 
 .container {
-    padding: 25px;
-    background-color: #101210; /* Light gray background */
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #0066cc;
 }
 
-/* Media query for screens with a maximum width of 600 pixels (typical for mobile devices) */
-@media only screen and (max-width: 600px) {
-    form {
-        max-width: 100%;
-    }
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #333;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #0066cc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+input[type="file"] {
+    margin: 10px 0;
+}
+
+button {
+    background-color: #0066cc;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #0052a3;
+}
+
+.cancelbtn {
+    background-color: #fff;
+    color: #0066cc;
+    border: 1px solid #0066cc;
+    margin-top: 10px;
+}
+
+.cancelbtn:hover {
+    background-color: #f8f9fa;
+}
+
+progress {
+    width: 100%;
+    margin: 10px 0;
+}
+
+#uploadStatus {
+    margin: 10px 0;
+    color: #333;
+}
+
+/* Admin Header and Navigation Styles */
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background-color: #f8f9fa;
+    color: #333;
+    padding: 20px 30px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    color: #333;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+nav {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-link {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    background-color: #0066cc;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    background-color: #0052a3;
+}
+
+.cancelbtn {
+    background-color: #fff;
+    color: #0066cc;
+    border: 1px solid #0066cc;
+    margin-left: 10px;
+}
+
+.cancelbtn:hover {
+    background-color: #f8f9fa;
 }

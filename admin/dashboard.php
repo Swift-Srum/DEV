@@ -46,6 +46,7 @@ $staff = $result->fetch_all(MYSQLI_ASSOC);
             <h1>Admin Dashboard</h1>
             <nav>
                 <a href="../" class="nav-link">Home</a>
+                <a href="../create-bowser/" class="nav-link">Add Bowser</a>
                 <a href="../login/logout.php?session=<?php echo $_COOKIE['sessionId']; ?>" class="nav-link">Logout</a>
             </nav>
         </header>
