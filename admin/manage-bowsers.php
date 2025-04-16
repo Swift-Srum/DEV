@@ -129,6 +129,7 @@ try {
             <nav>
                 <a href="../" class="nav-link">Home</a>
                 <a href="../create-bowser/" class="nav-link">Add Bowser</a>
+                <a href="../admin/dashboard.php/" class="nav-link">Staff Control</a>
                 <a href="../login/logout.php?session=<?php echo htmlspecialchars($sessionID); ?>" class="nav-link">Logout</a>
             </nav>
         </header>

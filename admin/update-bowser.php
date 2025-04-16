@@ -18,10 +18,14 @@ if (!$loggedIn || !$isAdmin) {
 
 try {
     // Validate input
-    $required = ['id', 'name', 'model', 'capacity', 'supplier', 'postcode', 'status'];
+    $required = ['id', 'name', 'model', 'capacity', 'supplier', 'postcode', 'status', 'date_received', 'date_returned'];
     foreach ($required as $field) {
-        if (!isset($_POST[$field]) || empty(trim($_POST[$field]))) {
+        if (!isset($_POST[$field])) {
             throw new Exception("Missing required field: $field");
+        }
+        // Allow empty dates
+        if ($field !== 'date_received' && $field !== 'date_returned' && empty(trim($_POST[$field]))) {
+            throw new Exception("Empty required field: $field");
         }
     }
 
@@ -32,12 +36,22 @@ try {
     $supplier = trim($_POST['supplier']);
     $postcode = trim($_POST['postcode']);
     $status = trim($_POST['status']);
+    $dateReceived = !empty($_POST['date_received']) ? trim($_POST['date_received']) : null;
+    $dateReturned = !empty($_POST['date_returned']) ? trim($_POST['date_returned']) : null;
 
     // Validate status
     $validStatuses = ['On Depot', 'Dispatched', 'In Transit', 
         'Maintenance Requested', 'Under Maintenance', 'Ready', 'Out of Service'];
     if (!in_array($status, $validStatuses)) {
         throw new Exception('Invalid status value');
+    }
+
+    // Validate dates if provided
+    if ($dateReceived && !strtotime($dateReceived)) {
+        throw new Exception('Invalid date received format');
+    }
+    if ($dateReturned && !strtotime($dateReturned)) {
+        throw new Exception('Invalid date returned format');
     }
 
     // Connect to database
@@ -54,17 +68,21 @@ try {
             capacity_litres = ?, 
             supplier_company = ?, 
             postcode = ?,
-            status_maintenance = ?
+            status_maintenance = ?,
+            date_received = ?,
+            date_returned = ?
         WHERE id = ?
     ");
 
-    $stmt->bind_param('ssdsssi', 
+    $stmt->bind_param('ssdsssssi', 
         $name, 
         $model, 
         $capacity, 
         $supplier, 
         $postcode, 
-        $status, 
+        $status,
+        $dateReceived,
+        $dateReturned,
         $id
     );
 

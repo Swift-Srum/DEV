@@ -7,6 +7,8 @@ async function editBowser(id) {
         const model = row.cells[1].textContent;
         const capacity = row.cells[2].textContent;
         const supplier = row.cells[3].textContent;
+        const dateReceived = row.cells[4].textContent;
+        const dateReturned = row.cells[5].textContent;
         const postcode = row.cells[6].textContent;
         const status = row.cells[7].textContent;
 
@@ -22,6 +24,20 @@ async function editBowser(id) {
 
         const newSupplier = prompt('Enter new supplier:', supplier);
         if (!newSupplier) return;
+
+        const newDateReceived = prompt('Enter date received (YYYY-MM-DD):', dateReceived);
+        // Allow empty date received
+        if (newDateReceived !== null && newDateReceived !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(newDateReceived)) {
+            alert('Invalid date format. Please use YYYY-MM-DD');
+            return;
+        }
+
+        const newDateReturned = prompt('Enter date returned (YYYY-MM-DD):', dateReturned);
+        // Allow empty date returned
+        if (newDateReturned !== null && newDateReturned !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(newDateReturned)) {
+            alert('Invalid date format. Please use YYYY-MM-DD');
+            return;
+        }
 
         const newPostcode = prompt('Enter new postcode:', postcode);
         if (!newPostcode) return;
@@ -49,6 +65,8 @@ async function editBowser(id) {
                 model: newModel,
                 capacity: newCapacity,
                 supplier: newSupplier,
+                date_received: newDateReceived,
+                date_returned: newDateReturned,
                 postcode: newPostcode,
                 status: newStatus
             })
@@ -62,6 +80,8 @@ async function editBowser(id) {
             row.cells[1].textContent = newModel;
             row.cells[2].textContent = newCapacity;
             row.cells[3].textContent = newSupplier;
+            row.cells[4].textContent = newDateReceived;
+            row.cells[5].textContent = newDateReturned;
             row.cells[6].textContent = newPostcode;
             row.cells[7].textContent = newStatus;
             

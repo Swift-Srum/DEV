@@ -28,7 +28,7 @@ if (!$isAdmin) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../assets/css/style_create.css">
+    <link rel="stylesheet" href="../assets/css/admin_style.css">
 </head>
 <body>
     <div class="admin-container">
@@ -37,6 +37,7 @@ if (!$isAdmin) {
             <nav>
                 <a href="../" class="nav-link">Home</a>
                 <a href="../admin/dashboard.php" class="nav-link">Staff Control</a>
+                <a href="../admin/manage-bowsers.php" class="nav-link">Bowser Control</a>
                 <a href="../login/logout.php?session=<?php echo $_COOKIE['sessionId']; ?>" class="nav-link">Logout</a>
             </nav>
         </header>
