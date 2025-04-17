@@ -1,102 +1,100 @@
 <?php
-error_reporting(1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 include('../essential/backbone.php');
 session_start();
 
 $username = $_COOKIE['user_name'] ?? '';
 $sessionID = $_COOKIE['sessionId'] ?? '';
 
-// Check if user is logged in and is a maintainer
+// Check if user is logged in and is a driver
 $loggedIn = confirmSessionKey($username, $sessionID);
 $userType = getUserType($username);
 
-if (!$loggedIn || $userType !== 'maintainer') {
+if (!$loggedIn || $userType !== 'driver') {
     header("Location: ../login/");
     exit();
 }
 
-// Get maintenance records
+// Get driver ID - modified to use the username directly
 $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-// Update the query to include bowser name, postcode, and bowser ID
-$query = "SELECT mb.*, b.status_maintenance, b.name AS bowser_name, b.postcode, b.id AS bowser_id 
-          FROM maintain_bowser mb 
-          JOIN bowsers b ON mb.bowserId = b.id 
-          WHERE mb.userId = ?";
+$stmt = $db->prepare("SELECT id FROM users WHERE username = ?");
+$stmt->bind_param('s', $username);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+$userId = $user['id'];
+
+// Replace the complex query with a simpler one to test database connectivity
+$query = "SELECT * FROM drivers_tasks WHERE driver_id = ?";
 $stmt = $db->prepare($query);
-$userId = getUserID();
 $stmt->bind_param('i', $userId);
 $stmt->execute();
 $result = $stmt->get_result();
-$maintenanceRecords = $result->fetch_all(MYSQLI_ASSOC);
+$driverTasks = $result->fetch_all(MYSQLI_ASSOC);
 
-// Define maintenance status options
-$maintenanceStatuses = [
-    'Maintenance Requested',
-    'Under Maintenance',
-    'Ready',
-    'Out of Service'
+// Add debug output
+echo "<!-- Debug: Found " . count($driverTasks) . " tasks for user ID: $userId -->";
+
+// Get available bowsers (status = "On Depot")
+$query = "SELECT id, name FROM bowsers WHERE status_maintenance = 'On Depot'";
+$result = $db->query($query);
+$availableBowsers = $result->fetch_all(MYSQLI_ASSOC);
+
+// Define bowser status options
+$bowserStatuses = [
+    'On Depot',
+    'In Transit',
+    'Dispatched'
 ];
 
-include('../maintainer/header.php');
+include('../driver/header.php');
 ?>
-
-<style>
-.resolve-btn {
-    margin-left: 5px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 3px;
-}
-
-.resolve-btn:hover {
-    background-color: #45a049;
-}
-</style>
 
 <div class="content-area">
     <div class="content-header">
-        <h1>Maintenance Dashboard</h1>
+        <h1>Driver Dashboard</h1>
     </div>
 
     <div class="content-body">
         <table class="maintenance-table">
             <thead>
                 <tr>
-                    <th>Bowser Name</th>
-                    <th>Location</th>
-                    <th>Description of Work</th>
-                    <th>Date of Maintenance</th>
+                    <th>Bowser</th>
+                    <th>Destination</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($maintenanceRecords as $record): ?>
-                <tr data-id="<?= $record['id'] ?>" data-bowser-id="<?= $record['bowser_id'] ?>">
-                    <td><?= htmlspecialchars($record['bowser_name']) ?></td>
-                    <td><?= htmlspecialchars($record['postcode']) ?></td>
+                <?php foreach ($driverTasks as $task): ?>
+                <tr data-id="<?= $task['id'] ?>" data-bowser-id="<?= $task['bowser_id'] ?>">
                     <td>
-                        <textarea class="description-edit"><?= htmlspecialchars($record['descriptionOfWork']) ?></textarea>
+                        <?php if ($task['bowser_id']): ?>
+                            <?= htmlspecialchars($task['bowser_name']) ?>
+                        <?php else: ?>
+                            <select class="bowser-select">
+                                <option value="">Select a Bowser</option>
+                                <?php foreach ($availableBowsers as $bowser): ?>
+                                <option value="<?= $bowser['id'] ?>"><?= htmlspecialchars($bowser['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <button onclick="assignBowser(<?= $task['id'] ?>)">Assign</button>
+                        <?php endif; ?>
                     </td>
-                    <td>
-                        <input type="date" class="date-edit" value="<?= htmlspecialchars($record['dateOfMaintenance']) ?>">
-                    </td>
+                    <td><?= htmlspecialchars($task['postcode'] ?? 'Not assigned') ?></td>
                     <td>
                         <select class="status-edit">
-                            <?php foreach ($maintenanceStatuses as $status): ?>
+                            <?php foreach ($bowserStatuses as $status): ?>
                                 <option value="<?= htmlspecialchars($status) ?>" 
-                                        <?= $record['status_maintenance'] === $status ? 'selected' : '' ?>>
+                                        <?= ($task['status'] === $status || ($task['bowser_id'] && $task['status_maintenance'] === $status)) ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($status) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </td>
                     <td>
-                        <button onclick="updateMaintenance(<?= $record['id'] ?>)">Save Changes</button>
-                        <button onclick="resolveMaintenance(<?= $record['id'] ?>)" class="resolve-btn">Resolve</button>
+                        <button onclick="updateTaskStatus(<?= $task['id'] ?>)">Update Status</button>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -106,51 +104,56 @@ include('../maintainer/header.php');
 </div>
 
 <script>
-function updateMaintenance(id) {
-    const row = document.querySelector(`tr[data-id="${id}"]`);
-    const bowserId = row.dataset.bowserId;
-    const description = row.querySelector('.description-edit').value;
-    const date = row.querySelector('.date-edit').value;
-    const status = row.querySelector('.status-edit').value;
+function assignBowser(taskId) {
+    const row = document.querySelector(`tr[data-id="${taskId}"]`);
+    const bowserId = row.querySelector('.bowser-select').value;
+    
+    if (!bowserId) {
+        alert('Please select a bowser');
+        return;
+    }
 
-    fetch('update_maintenance.php', {
+    fetch('update_task.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `id=${id}&bowserId=${bowserId}&description=${encodeURIComponent(description)}&date=${date}&status=${status}`
+        body: `action=assign&taskId=${taskId}&bowserId=${bowserId}`
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Maintenance record updated successfully');
+            alert('Bowser assigned successfully');
+            location.reload();
         } else {
-            alert('Error updating maintenance record: ' + data.message);
+            alert('Error assigning bowser: ' + data.message);
         }
     });
 }
 
-function resolveMaintenance(id) {
-    if (!confirm('Are you sure you want to resolve this maintenance record?')) {
+function updateTaskStatus(taskId) {
+    const row = document.querySelector(`tr[data-id="${taskId}"]`);
+    const bowserId = row.dataset.bowserId;
+    const status = row.querySelector('.status-edit').value;
+
+    if (!bowserId) {
+        alert('You must assign a bowser first');
         return;
     }
 
-    fetch('resolve_maintenance.php', {
+    fetch('update_task.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `id=${id}`
+        body: `action=updateStatus&taskId=${taskId}&bowserId=${bowserId}&status=${status}`
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Remove the row from the table
-            const row = document.querySelector(`tr[data-id="${id}"]`);
-            row.remove();
-            alert('Maintenance record resolved successfully');
+            alert('Status updated successfully');
         } else {
-            alert('Error resolving maintenance record: ' + data.message);
+            alert('Error updating status: ' + data.message);
         }
     });
 }
