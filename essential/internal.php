@@ -455,29 +455,25 @@
         
     }
 	
-	function searchBowsers($e1, $e2, $n1, $n2)  //Searches backward and forward east and north within the specified distance (see /index.php to see where this is called from currently)
+	function searchBowsers($e1, $e2, $n1, $n2)  //Searches backward and forward east and north within the specified distance
 {
+    $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $q = $db->prepare("SELECT * FROM bowsers WHERE active = 1 AND status_maintenance NOT IN ('Ready', 'On Depot') 
+                       AND ( (eastings BETWEEN ? AND ?) AND (northings BETWEEN ? AND ?) );");
+    $q->bind_param('iiii', $e1, $e2, $n1, $n2);
+    $q->execute();
 
-            $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-            $q = $db->prepare("SELECT * FROM bowsers WHERE active = 1 AND ( (eastings BETWEEN ? AND ?) AND (northings BETWEEN ? AND ?) );");
-            $q->bind_param('iiii', $e1, $e2, $n1, $n2);
-            $q->execute();
+    $res = $q->get_result();
+    $items = array(); // Initialize an array to store item data
 
-            $res = $q->get_result();
-
-            $items = array(); // Initialize an array to store item data
-
-            while ($row = $res->fetch_array()) {
-                // Add each item to the array
-                $items[] = $row;
-            }
-
-            // Return the array of items
-            return $items;
-        
+    while ($row = $res->fetch_array()) {
+        // Add each item to the array
+        $items[] = $row;
     }
 
-
+    // Return the array of items
+    return $items;
+}
 
 
 	function getAllBowsersOwned($ownerId) //NOT CURRENTLY IN USE

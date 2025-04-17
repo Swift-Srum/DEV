@@ -133,6 +133,7 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
                     <div class="card-info">
                         <h3><?= $name ?></h3>
                         <p><?= $postcode ?></p>
+                        <p><strong>Status: </strong><?= htmlspecialchars($item['status_maintenance']) ?></p>
                         <a href="view?id=<?= $id ?>" class="view-btn">View</a>
                     </div>
                 </div>
