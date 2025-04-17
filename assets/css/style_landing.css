@@ -335,3 +335,20 @@ input {
     gap: 1.5rem;
     margin-top: 2rem;
 }
+
+.search-status {
+    margin: 10px 0;
+    text-align: center;
+}
+
+.alert-info {
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    padding: 10px;
+    color: #1976d2;
+}
+
+.fa-info-circle {
+    margin-right: 5px;
+}
