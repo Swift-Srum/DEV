@@ -159,6 +159,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
             
+        case 'resolve':
+            // Resolve a task (remove it from drivers_tasks and reset bowser status)
+            try {
+                $db->begin_transaction();
+                
+                // Get the bowser ID associated with this task
+                $stmt = $db->prepare("SELECT bowser_id FROM drivers_tasks WHERE id = ?");
+                $stmt->bind_param('i', $taskId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $task = $result->fetch_assoc();
+                
+                if (!$task) {
+                    throw new Exception('Task not found');
+                }
+                
+                $bowserId = $task['bowser_id'];
+                
+                // Reset bowser status if one was assigned
+                if ($bowserId) {
+                    $stmt = $db->prepare("UPDATE bowsers SET status_maintenance = 'On Depot' WHERE id = ?");
+                    $stmt->bind_param('i', $bowserId);
+                    $stmt->execute();
+                }
+                
+                // Delete the task
+                $stmt = $db->prepare("DELETE FROM drivers_tasks WHERE id = ?");
+                $stmt->bind_param('i', $taskId);
+                $stmt->execute();
+                
+                $db->commit();
+                echo json_encode(['success' => true]);
+            } catch (Exception $e) {
+                $db->rollback();
+                echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            }
+            break;
+            
         default:
             echo json_encode(['success' => false, 'message' => 'Invalid action']);
             break;

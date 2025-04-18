@@ -112,7 +112,8 @@ include('../driver/header.php');
                         </select>
                     </td>
                     <td>
-                        <button onclick="updateTaskStatus(<?= $task['id'] ?>)">Update Status</button>
+                        <button onclick="updateTaskStatus(<?= $task['id'] ?>)" class="btn-status">Update Status</button>
+                        <button onclick="resolveTask(<?= $task['id'] ?>)" class="btn-resolve">Resolve Task</button>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -132,6 +133,29 @@ include('../driver/header.php');
 }
 .bowser-selection {
     margin-top: 5px;
+}
+.btn-resolve {
+    margin-left: 5px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.btn-resolve:hover {
+    background-color: #c9302c;
+}
+.btn-status {
+    background-color: #5bc0de;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.btn-status:hover {
+    background-color: #46b8da;
 }
 </style>
 
@@ -226,6 +250,30 @@ function updateTaskStatus(taskId) {
             alert('Status updated successfully');
         } else {
             alert('Error updating status: ' + data.message);
+        }
+    });
+}
+
+function resolveTask(taskId) {
+    if (!confirm('Are you sure you want to resolve this task? This will remove it from your task list.')) {
+        return;
+    }
+
+    fetch('update_task.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=resolve&taskId=${taskId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Task resolved successfully');
+            // Remove the row from the table
+            document.querySelector(`tr[data-id="${taskId}"]`).remove();
+        } else {
+            alert('Error resolving task: ' + data.message);
         }
     });
 }
