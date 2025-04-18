@@ -75,7 +75,21 @@ include('../driver/header.php');
                 <tr data-id="<?= $task['id'] ?>" data-bowser-id="<?= $task['bowser_id'] ?>">
                     <td>
                         <?php if ($task['bowser_id']): ?>
-                            <?= htmlspecialchars($task['bowser_name']) ?>
+                            <!-- Make the bowser name clickable -->
+                            <span class="bowser-name" onclick="showBowserSelection(this, <?= $task['id'] ?>)"><?= htmlspecialchars($task['bowser_name']) ?></span>
+                            <!-- Hidden dropdown that will show when clicked -->
+                            <div class="bowser-selection" style="display:none;">
+                                <select class="bowser-select">
+                                    <option value="<?= $task['bowser_id'] ?>"><?= htmlspecialchars($task['bowser_name']) ?></option>
+                                    <?php foreach ($availableBowsers as $bowser): ?>
+                                        <?php if ($bowser['id'] != $task['bowser_id']): ?>
+                                            <option value="<?= $bowser['id'] ?>"><?= htmlspecialchars($bowser['name']) ?></option>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button onclick="changeBowser(<?= $task['id'] ?>, this)">Change</button>
+                                <button onclick="cancelBowserChange(this)">Cancel</button>
+                            </div>
                         <?php else: ?>
                             <select class="bowser-select">
                                 <option value="">Select a Bowser</option>
@@ -107,7 +121,61 @@ include('../driver/header.php');
     </div>
 </div>
 
+<style>
+.bowser-name {
+    cursor: pointer;
+    color: #0066cc;
+    text-decoration: underline;
+}
+.bowser-name:hover {
+    color: #004080;
+}
+.bowser-selection {
+    margin-top: 5px;
+}
+</style>
+
 <script>
+function showBowserSelection(element, taskId) {
+    // Hide the bowser name and show the selection dropdown
+    element.style.display = 'none';
+    element.nextElementSibling.style.display = 'block';
+}
+
+function cancelBowserChange(button) {
+    // Find the parent div and hide it, then show the bowser name again
+    const selectionDiv = button.closest('.bowser-selection');
+    selectionDiv.style.display = 'none';
+    selectionDiv.previousElementSibling.style.display = 'inline';
+}
+
+function changeBowser(taskId, button) {
+    const selectionDiv = button.closest('.bowser-selection');
+    const bowserId = selectionDiv.querySelector('.bowser-select').value;
+    
+    if (!bowserId) {
+        alert('Please select a bowser');
+        return;
+    }
+
+    fetch('update_task.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=change&taskId=${taskId}&bowserId=${bowserId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Bowser changed successfully');
+            location.reload();
+        } else {
+            alert('Error changing bowser: ' + data.message);
+        }
+    });
+}
+
 function assignBowser(taskId) {
     const row = document.querySelector(`tr[data-id="${taskId}"]`);
     const bowserId = row.querySelector('.bowser-select').value;
