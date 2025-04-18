@@ -6,21 +6,22 @@ $sessionID = $_COOKIE['sessionId'];
 $userId = getUserID();
 
 // Validate session
-
-
-
 $loggedIn = confirmSessionKey($username, $sessionID);
 if (!$loggedIn) {
     header("Location: /login");
     exit();
 }
 
-$success = $_GET['success'];
-
-if($success == 1)
-	echo '<script>alert("Report made successfully")</script>';
-else if(!$success && $success != null)
-	echo '<script>alert("Report failed for an unspecified reason")</script>'; //This should be updated in future to be more descriptive. Currently checks basic things like postcode being valid, empty fields etc
+// Improved feedback handling with isset check
+if(isset($_GET['success'])) {
+    $success = $_GET['success'];
+    
+    if($success == 1) {
+        echo '<script>alert("Report made successfully");</script>';
+    } else {
+        echo '<script>alert("Report failed for an unspecified reason");</script>'; 
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -54,6 +55,7 @@ else if(!$success && $success != null)
             </select>
             
             <button type="submit" class="report-btn">Submit Report</button>
+            <a href="/" class="cancel-btn">Cancel</a>
         </form>
     </div>
 </body>

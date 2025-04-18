@@ -52,12 +52,7 @@ try {
     $stmt = $db->prepare("INSERT INTO area_reports (userId, postcode, report, reportType) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("isss", $userId, $postcode, $report, $reportType);
     
-    if ($stmt->execute()) {
-        header("Location: ../report/index.php?success=1");
-    } else {
-        header("Location: ../report/index.php?success=0");
-		echo 'Database error';
-    }
+    $reportSubmitted = $stmt->execute();
     
     $stmt->close();
     $db->close();
@@ -67,4 +62,12 @@ try {
     header("Location: ../report/index.php?success=0");
     exit();
 }
+
+// In submit_area.php after processing the form
+if ($reportSubmitted) {
+    header("Location: /report/index.php?success=1");
+} else {
+    header("Location: /report/index.php?success=0");
+}
+exit();
 ?>

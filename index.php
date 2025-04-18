@@ -89,6 +89,12 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
             <?php if ($loggedIn && $userType === 'dispatcher'): ?>
                 <a href="/dispatcher/reported_areas.php" class="nav-link">Dispatcher Dashboard</a>
             <?php endif; ?>
+            <?php if ($loggedIn && $userType === 'driver'): ?>
+                <a href="/driver/dashboard.php" class="nav-link">Driver Dashboard</a>
+            <?php endif; ?>
+            <?php if ($loggedIn && $userType === 'maintainer'): ?>
+                <a href="/maintainer/dashboard.php" class="nav-link">Maintainer Dashboard</a>
+            <?php endif; ?>
         </div>
     </nav>
 
