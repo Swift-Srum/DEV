@@ -1,209 +1,278 @@
 <?php
-
 session_start();
+
+// Include necessary files (e.g., backbone with essential functions)
 include('./essential/backbone.php');
+
+// Set headers to enhance security (XSS Protection, Content-Type options)
 header("X-XSS-Protection: 1; mode=block");
 header("X-Content-Type-Options: nosniff");
 
+// Check user login status using session and cookies
 $username = $_COOKIE['user_name'] ?? '';
 $sessionID = $_COOKIE['sessionId'] ?? '';
-$loggedIn = confirmSessionKey($username, $sessionID);
-$userType = $loggedIn ? getUserType($username) : '';
+$loggedIn = confirmSessionKey($username, $sessionID);  // Validate session
+$userType = $loggedIn ? getUserType($username) : '';  // Get user type if logged in
+$isAdmin = $userType === 'admin';  // Check if user is admin
+$idx = getUserID();  // Get user ID
 
-$isAdmin = $userType === 'admin';
-$idx = getUserID();
-
-// AES decryption
+// Decrypt error message if any
 $aes = new AES256;
-$err = $_GET['err'];
+$err = $_GET['err'] ?? '';
 $err = $aes->decrypt($err, "secretkey");
 
+// Retrieve postcode from query parameters and fetch location details
 $postcode = $_GET['postcode'] ?? null;
 if ($postcode) {
-    $url = "https://api.postcodes.io/postcodes/$postcode";
-    $response = file_get_contents($url);
-    $data = json_decode($response, true);
-
+    $url = "https://api.postcodes.io/postcodes/$postcode";  // API to fetch postcode data
+    $response = file_get_contents($url);  // Send request to API
+    $data = json_decode($response, true);  // Decode JSON response
     if (isset($data['result'])) {
-        $eastings = $data['result']['eastings'];
-        $northings = $data['result']['northings'];
+        $eastings = $data['result']['eastings'];  // Get eastings (x-coordinate)
+        $northings = $data['result']['northings'];  // Get northings (y-coordinate)
     } else {
-        $eastings = 0;
-		$northings = 0;
+        $eastings = 0;  // Default to 0 if no valid data found
+        $northings = 0;
     }
 }
 
-$distance = $_GET['distance'];
+// Set search radius (distance) and ensure it doesn't exceed 30 km
+$distance = ($_GET['distance'] ?? 15) * 1000;  // Convert km to meters
+if ($distance > 30000) $distance = 30000;  // Cap distance at 30 km
 
-$distance = $distance * 1000;
-
-if ($distance > 30000)
-	$distance = 30000;
-
+// Calculate boundary coordinates for searching (within the distance range)
 $n1 = $northings - $distance;
 $n2 = $northings + $distance;
 $e1 = $eastings - $distance;
 $e2 = $eastings + $distance;
 
+// If coordinates are available, perform search
+if ($northings != 0 && $eastings != 0) {
+    try {
+        $items = searchBowsers($e1, $e2, $n1, $n2);  // Search for nearby bower locations
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();  // Handle any errors during search
+    }
+}
 
-if ($northings != 0 && $eastings != 0)
-	try {
-   	 
-		$items = searchBowsers($e1, $e2, $n1, $n2);
-	} catch (Exception $e) {
-  	  echo "Error: " . $e->getMessage();
-	
-
-	}
-
-
-$firstLat = $items[0]['latitude'] ?? '51.5007'; // Set a default value if latitude is null or not set
-$firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longitude is null or not set
-
-
+// Set default map location based on the first found item, or fallback
+$firstLat = $items[0]['latitude'] ?? '51.5007';
+$firstLong = $items[0]['longitude'] ?? '0.1246';
 ?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Metadata and external resources (CSS, JS) -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bowser Report</title>
     <link rel="stylesheet" href="/assets/css/style_landing.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://kit.fontawesome.com/76082def73.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/" class="navbar-brand">Swift Bowserss</a>
-        <div class="navbar-nav">
-            <?php if ($loggedIn): ?>
-                <a href="/login/logout.php?session=<?= $sessionID ?>" class="nav-link">Logout</a>
-            <?php else: ?>
-                <a href="/login" class="nav-link">Login</a>
-            <?php endif; ?>
-            <a href="/report/" class="nav-link nav-report">Report Here</a>
-            <a href="#" class="nav-link">About Us</a>
-            <a href="#" class="nav-link">FAQ</a>
-            <?php if ($isAdmin): ?>
-                <a href="admin/dashboard.php" class="nav-link">Admin Dashboard</a>
-            <?php endif; ?>
-            <?php if ($loggedIn && $userType === 'dispatcher'): ?>
-                <a href="/dispatcher/reported_areas.php" class="nav-link">Dispatcher Dashboard</a>
-            <?php endif; ?>
-            <?php if ($loggedIn && $userType === 'driver'): ?>
-                <a href="/driver/dashboard.php" class="nav-link">Driver Dashboard</a>
-            <?php endif; ?>
-            <?php if ($loggedIn && $userType === 'maintainer'): ?>
-                <a href="/maintainer/dashboard.php" class="nav-link">Maintainer Dashboard</a>
-            <?php endif; ?>
+
+<!-- Navigation menu with login/logout based on session -->
+<nav>
+    <div class="logo"><h1>Swift Bowsers</h1></div>
+    <ul id="menuList">
+        <li><a href="/">Home</a></li>
+        <li><a href="/report/">Report Here</a></li>
+        <li><a href="about.php">About Us</a></li>
+        <li><a href="faq.php">FAQ</a></li>
+        <?php if ($loggedIn): ?>
+            <li><a href="/login/logout.php?session=<?= $sessionID ?>">Logout</a></li>
+        <?php else: ?>
+            <li><a href="/login">Login</a></li>
+        <?php endif; ?>
+    </ul>
+    <div class="menu-icon">
+        <i class="fa-solid fa-bars" onclick="toggleMenu()"></i> <!-- Hamburger menu for mobile -->
+    </div>
+</nav>
+
+<script>
+    // Toggle navigation menu for mobile view
+    window.toggleMenu = function () {
+        let menuList = document.getElementById("menuList");
+        if (menuList.style.maxHeight === "0px" || menuList.style.maxHeight === "") {
+            menuList.style.maxHeight = menuList.scrollHeight + "px";
+        } else {
+            menuList.style.maxHeight = "0px";
+        }
+    }
+</script>
+
+<main>
+    <!-- Hero section with a search interface for finding bower locations -->
+    <section class="hero">
+        <h1>Search For Nearby<br>Water Bowser in Seconds</h1>
+        <div class="search-container">
+            <div class="search-input-group">
+                <span class="location-icon">📍</span>
+                <input type="text" id="postcode-input" placeholder="Enter location"
+                       value="<?= isset($_GET['postcode']) ? htmlspecialchars($_GET['postcode']) : '' ?>">
+                <button onclick="getPostcode()">&target;</button>
+            </div>
+            <div class="slider-container">
+                <label for="distance">Distance: <span id="distanceValue"><?= isset($_GET['distance']) ? (int)$_GET['distance'] : 15 ?></span> km</label>
+                <input type="range" id="distance" name="distance" min="1" max="30"
+                       value="<?= isset($_GET['distance']) ? (int)$_GET['distance'] : 15 ?>"
+                       oninput="updateDistanceValue(this.value)">
+            </div>
+            <button class="search-btn">Search</button>  <!-- Trigger search functionality -->
         </div>
-    </nav>
+    </section>
 
-    <main>
-        <section class="hero">
-            <h1>Find the Closest<br>Water Bowser in Seconds</h1>
-            
-            <div class="search-container">
-                <div class="search-input-group">
-                    <span class="location-icon">📍</span>
-                    <input type="text" id="postcode-input" placeholder="Enter location" 
-                        value="<?= isset($_GET['postcode']) ? htmlspecialchars($_GET['postcode']) : '' ?>">
-                </div>
-                
-                <div class="slider-container">
-                    <label for="distance">
-                        Distance: <span id="distanceValue"><?= isset($_GET['distance']) ? (int)$_GET['distance'] : 15 ?></span> km
-                    </label>
-                    <input type="range" id="distance" name="distance" min="1" max="30" 
-                        value="<?= isset($_GET['distance']) ? (int)$_GET['distance'] : 15 ?>" 
-                        oninput="updateDistanceValue(this.value)">
-                </div>
-                
-                <button class="search-btn">Search</button>
-            </div>
-        </section>
+    <!-- Results section displaying map and bowser list -->
+    <section class="results-section">
+        <div class="map-container">
+            <div id="map"></div>  <!-- Leaflet map showing bowser locations -->
+        </div>
 
-        <section class="results-section">
-            <div class="map-container">
-                <div id="map"></div>
-            </div>
-            
-            <div class="bowser-list">
-                <?php foreach ($items as $item): 
-                    $id = $item['id'];
-                    $name = htmlspecialchars($item['name']);
-                    $postcode = htmlspecialchars($item['postcode']);
-                    $itemImageName = getItemImage($id);
-                ?>
-                <div class="summary-card">
-                    <img src="/create-bowser/uploads/<?= $itemImageName ?>" alt="Bowser Image" class="responsive-img">
-                    <div class="card-info">
-                        <h3><?= $name ?></h3>
-                        <p><?= $postcode ?></p>
-                        <p><strong>Status: </strong><?= htmlspecialchars($item['status_maintenance']) ?></p>
-                        <a href="view?id=<?= $id ?>" class="view-btn">View</a>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        // Keep all your existing JavaScript for the map
-        var map = L.map('map').setView([<?= $firstLat ?>, <?= $firstLong ?>], 10);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        var locations = [
+        <div class="bowser-list">
             <?php foreach ($items as $item): 
+                // Prepare item data for each bowser (e.g., name, postcode, status)
                 $id = $item['id'];
                 $name = htmlspecialchars($item['name']);
                 $postcode = htmlspecialchars($item['postcode']);
-                $lat = floatval($item['latitude']);
-                $long = floatval($item['longitude']);
+                $status = htmlspecialchars($item['status_maintenance']);
+                $itemImageName = getItemImage($id);
+
+                // Determine status class for visual styling
+                $statusClass = '';
+                if (stripos($status, 'active') !== false) $statusClass = 'active';
+                elseif (stripos($status, 'maintenance') !== false) $statusClass = 'maintenance';
+                elseif (stripos($status, 'out') !== false) $statusClass = 'outofservice';
             ?>
-            ,{ 
-                postcode: "<?= $postcode ?>", 
-                lat: <?= $lat ?>, 
-                lon: <?= $long ?>, 
-                label: "<?= addslashes($name . ', ' . $postcode . '<br><br><a href=view?id=' . $id . ' class=\"report-btn\">View</a>') ?>" 
-            }
+            <div class="summary-card">
+            <div class="summary-card-img">
+                <img src="/create-bowser/uploads/<?= $itemImageName ?>" alt="Bowser Image">
+            </div>
+            <div class="summary-card-content">
+                <h3 class="summary-title"><?= $name ?></h3>
+                <div class="summary-meta">📍 <?= $postcode ?></div>
+                <div class="summary-meta">🔧 
+                    <span class="status-label <?= $statusClass ?>"><?= $status ?></span>
+                </div>
+                <a href="view?id=<?= $id ?>" class="summary-view-btn">View</a>  <!-- View more details about the bowser -->
+            </div>
+        </div>
+
             <?php endforeach; ?>
-        ];
+        </div>
+    </section>
+</main>
 
-        locations.forEach(loc => {
-            L.marker([loc.lat, loc.lon]).addTo(map)
-                .bindPopup(loc.label)
-                .openPopup();
-        });
+<footer>
+    <div class="footer-content">
+        <p>&copy; 2025 Swift Bowsers. All rights reserved.</p>
+        <div class="social-icons">
+            <a href="#"><img src="/assets/icons/facebook.png" alt="Facebook"></a>
+            <a href="#"><img src="/assets/icons/twitter.png" alt="Twitter"></a>
+            <a href="#"><img src="/assets/icons/instagram.png" alt="Instagram"></a>
+        </div>
+    </div>
+</footer>
 
-        // Keep all your existing event listeners
-        document.addEventListener("DOMContentLoaded", function () {
-            const searchBtn = document.querySelector(".search-btn");
-            const distanceSlider = document.getElementById("distance");
-            const distanceValue = document.getElementById("distanceValue");
+<script>
+    // Initialize map and set location markers for each bowser
+    var map = L.map('map').setView([<?= $firstLat ?>, <?= $firstLong ?>], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-            function updateSearchURL() {
-                let postcode = document.getElementById("postcode-input").value.trim();
-                let distance = distanceSlider.value;
+    // Create markers for each bowser based on location data
+    var locations = [
+        <?php foreach ($items as $item): 
+            // Prepare bowser location data for the map
+            $id = $item['id'];
+            $name = htmlspecialchars($item['name']);
+            $postcode = htmlspecialchars($item['postcode']);
+            $status = htmlspecialchars($item['status_maintenance']);
+            $lat = floatval($item['latitude']);
+            $long = floatval($item['longitude']);
 
-                let params = new URLSearchParams(window.location.search);
-                if (postcode) {
-                    params.set("postcode", postcode);
-                }
-                params.set("distance", distance);
-                window.location.href = window.location.pathname + "?" + params.toString();
-            }
-
-            searchBtn.addEventListener("click", updateSearchURL);
-            distanceSlider.addEventListener("change", updateSearchURL);
-        });
-
-        function updateDistanceValue(value) {
-            document.getElementById("distanceValue").textContent = value;
+            // Status class for different bowser states
+            $statusClass = '';
+            if (stripos($status, 'active') !== false) $statusClass = 'active';
+            elseif (stripos($status, 'maintenance') !== false) $statusClass = 'maintenance';
+            elseif (stripos($status, 'out') !== false) $statusClass = 'outofservice';
+        ?>
+        ,{
+            postcode: "<?= $postcode ?>",
+            lat: <?= $lat ?>,
+            lon: <?= $long ?>,
+            label: `<?= addslashes(""
+                . "<div class='popup-box $statusClass'>"
+                . "<div class='popup-row'><span class='popup-label'>👤 Name:</span> $name</div>"
+                . "<div class='popup-row'><span class='popup-label'>📍 Postcode:</span> $postcode</div>"
+                . "<div class='popup-row'><span class='popup-label'>📦 Status:</span> <span class='status-label'>$status</span></div>"
+                . "<div class='popup-actions'>"
+                . "<a href='view?id=$id' class='popup-btn'>View</a>"
+                . "<a href='https://www.google.com/maps/dir/?api=1&destination=$lat,$long' target='_blank' class='popup-btn directions-btn'>Get Directions</a>"
+                . "</div></div>") ?>`
         }
-    </script>
+        <?php endforeach; ?>
+    ];
+
+    // Add markers for each location on the map
+    locations.forEach(loc => {
+        L.marker([loc.lat, loc.lon]).addTo(map).bindPopup(loc.label);
+    });
+
+    // Event listener to handle search actions
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchBtn = document.querySelector(".search-btn");
+        const distanceSlider = document.getElementById("distance");
+        const distanceValue = document.getElementById("distanceValue");
+
+        // Function to update the search URL based on input
+        function updateSearchURL() {
+            let postcode = document.getElementById("postcode-input").value.trim();
+            let distance = distanceSlider.value;
+            let params = new URLSearchParams(window.location.search);
+            if (postcode) params.set("postcode", postcode);
+            params.set("distance", distance);
+            window.location.href = window.location.pathname + "?" + params.toString();
+        }
+
+        // Add event listeners for search button and distance slider
+        searchBtn.addEventListener("click", updateSearchURL);
+        distanceSlider.addEventListener("change", updateSearchURL);
+    });
+
+    // Function to update distance value display
+    function updateDistanceValue(value) {
+        document.getElementById("distanceValue").textContent = value;
+    }
+
+    // Function to get postcode based on user's geolocation
+    function getPostcode() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    // Show user's current postcode based on geolocation
+    function showPosition(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const apiKey = "188416c11e824232a324ca08015e9f9f";
+        const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${apiKey}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const postcode = data.results[0].components.postcode;
+                document.getElementById("postcode-input").value = postcode;
+            })
+            .catch(error => console.error("Error:", error));
+    }
+</script>
+
 </body>
 </html>
