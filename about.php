@@ -89,8 +89,8 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
                 <li><a href="/login">Login</a></li>
             <?php endif; ?>
         </ul>
-        <div class="menu-icon">
-            <i class="fa-solid fa-bars" onclick="toggleMenu()"></i>
+        <div class="menu-icon" onclick="toggleMenu()">
+        <img src="/assets/icons/menu-icon.svg" alt="Menu">
         </div>
    </nav>
 
