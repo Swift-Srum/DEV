@@ -1,19 +1,21 @@
+/* ====== Global Styles ====== */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
     text-align: center;
-    padding-top: 1rem; /* Add space at the top for the centered navbar */
 }
 
+/* ====== Header Section ====== */
 header {
     background: #fff;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
+/* ====== Buttons ====== */
 .report-btn, .search-btn {
     background-color: #007bff;
     color: #fff;
@@ -28,6 +30,7 @@ header {
     background-color: #0056b3;
 }
 
+/* ====== Search Section ====== */
 .search-section {
     background: #fff;
     padding: 20px;
@@ -50,6 +53,7 @@ input {
     width: 60%;
 }
 
+/* ====== Main Image ====== */
 .main-image img {
     width: 80%;
     margin: 20px 0;
@@ -57,97 +61,135 @@ input {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.bowser-summary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    width: 80%;
-    margin: auto;
-}
-
+/* ====== Clean Summary Card Style ====== */
 .summary-card {
     background: white;
     border-radius: 10px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-.summary-card img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.card-info {
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    flex: 1;
+    max-width: 100%; 
+    transition: transform 0.2s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+}
+
+
+.summary-card-img img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.summary-card-content {
+    padding: 1rem;
     text-align: left;
 }
 
-.card-info h3 {
-    margin: 0 0 0.5rem 0;
+.summary-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
 }
 
-.view-btn {
+.summary-meta {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.4rem;
+}
+
+.summary-view-btn {
     display: inline-block;
+    margin-top: 0.5rem;
+    padding: 6px 14px;
     background-color: #007bff;
-    color: white;
-    padding: 8px 20px;
+    color: #fff;
     border-radius: 4px;
     text-decoration: none;
-    margin-top: 10px;
-    transition: background-color 0.2s;
+    font-weight: bold;
+    transition: background-color 0.3s;
 }
 
-.view-btn:hover {
+.summary-view-btn:hover {
     background-color: #0056b3;
 }
 
+
+.status-label.active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-label.maintenance {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-label.outofservice {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #eee;
+    display: inline-block;
+}
+
+
+
+  
+  
+
+/* ====== Top Right Button ====== */
 .top-right-btn {
-    position: fixed; /* Fix the position relative to the browser window */
-    top: 20px; /* Adjust the top distance */
-    right: 20px; /* Adjust the right distance */
-    background-color: #007bff; /* Button color */
-    color: #fff; /* Text color */
-    padding: 10px 20px; /* Padding inside the button */
-    border-radius: 5px; /* Rounded corners */
-    text-decoration: none; /* Remove underline */
-    font-size: 16px; /* Font size */
-    transition: background-color 0.3s ease; /* Smooth transition */
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 .top-right-btn:hover {
-    background-color: #3700b3; /* Darker color on hover */
+    background-color: #3700b3;
 }
 
+/* ====== Responsive Images ====== */
 .responsive-img {
-    max-width: 300px; /* Set a maximum width */
-    max-height: 300px; /* Set a maximum height */
-    width: auto; /* Maintain aspect ratio */
-    height: auto; /* Maintain aspect ratio */
-    display: block; /* Remove space below the image */
-    margin: 0 auto; /* Optional: Center the image if needed */
+    max-width: 300px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
 
+/* ====== Map Styling ====== */
 #map {
     width: 100%;
     height: 500px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    position: relative; /* Ensures positioning is relative to the map container */
+    position: relative;
 }
 
 .view-bowser-btn {
     position: absolute;
-    bottom: 20px; /* Places the button at the bottom of the map container */
-    left: 50%; /* Centers the button horizontally */
-    transform: translateX(-50%); /* Centers the button perfectly */
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     padding: 10px 20px;
     font-size: 16px;
     background-color: #007bff;
@@ -155,52 +197,54 @@ input {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    z-index: 1000; /* Ensures it appears above the map content */
+    z-index: 1000;
 }
 
 .view-bowser-btn:hover {
     background-color: #0056b3;
 }
 
-/* button group for the top right buttons */
+/* ====== Top Right Button Group ====== */
 .btn-group {
     position: fixed;
     top: 20px;
     right: 20px;
     text-decoration: none;
 }
+
 .btn-group button {
-    background-color: #007bff; /* Green background */
-    color: white; /* White text */
-    padding: 10px 20px; /* Some padding */
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
     text-decoration: none;
-    cursor: pointer; /* Pointer/hand icon */
-    float: left; /* Float the buttons side by side */
-  }
-  .btn-group a {
+    cursor: pointer;
+    float: left;
+}
+
+.btn-group a {
     text-decoration: none;
     border-radius: 4px;
     transition: all 0.3s ease;
     color: white;
-  }
-  .btn-group button:not(:last-child) {
-    border-right: none; /* Prevent double borders */
-  }
-  
-  /* Clear floats (clearfix hack) */
-  .btn-group:after {
+}
+
+.btn-group button:not(:last-child) {
+    border-right: none;
+}
+
+.btn-group:after {
     content: "";
     clear: both;
     display: table;
-  }
-  
-  /* Add a background color on hover */
-  .btn-group button:hover {
-    background-color: #3700b3;
-  }
+}
 
+.btn-group button:hover {
+    background-color: #3700b3;
+}
+
+/* ====== Hero Section ====== */
 .hero {
-    padding: 4rem 2rem;
+    padding: 2rem 2rem;
     text-align: center;
     background: none;
 }
@@ -212,6 +256,7 @@ input {
     line-height: 1.2;
 }
 
+/* ====== Search Container ====== */
 .search-container {
     background: white;
     border-radius: 50px;
@@ -268,87 +313,340 @@ input {
     background-color: #006C46;
 }
 
-/* Navbar styling */
-.navbar {
-    background-color: #1a75ff;
-    padding: 0.7rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 70%; /* Make navbar width smaller */
-    max-width: 1000px; /* Limit maximum width */
-    margin: 0 auto; /* Center the navbar */
-    border-radius: 50px; /* Curve the navbar */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* Modern Leaflet Popup Styling */
+.leaflet-popup-content-wrapper {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.navbar-brand {
-    color: white;
-    font-size: 1.2rem; /* Slightly smaller font */
-    font-weight: bold;
+.leaflet-popup-content {
+    margin: 0;
+    padding: 1rem;
+    font-size: 14px;
+    color: #333;
+}
+
+.popup-box {
+    text-align: left;
+}
+
+.popup-box strong {
+    font-size: 16px;
+    color: #007bff;
+}
+
+.popup-btn {
+    display: inline-block;
+    margin-top: 8px;
+    margin-right: 6px;
+    padding: 6px 14px;
+    background-color: #007bff;
+    color: #ffffff !important;
+    font-size: 14px;
+    font-weight: 600;
     text-decoration: none;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
 }
 
-.navbar-nav {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
+.popup-btn:hover {
+    background-color: #0056b3;
+    color: #ffffff !important;
 }
 
-.nav-link {
-    color: white;
-    text-decoration: none;
-    padding: 0.4rem 1rem; /* Smaller padding */
-    border-radius: 25px;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
+.popup-btn:visited {
+    color: #ffffff !important;
+}
+
+.directions-btn {
+    background-color: #28a745;
+    color: #ffffff !important;
+}
+
+.directions-btn:hover {
+    background-color: #1e7e34;
+    color: #ffffff !important;
+}
+
+.status-label {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #eee;
+    color: #333;
+    font-size: 13px;
     font-weight: 500;
+    border-radius: 4px;
 }
 
-.nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+.status-label.active {
+    background-color: #d4edda;
+    color: #155724;
 }
 
-.nav-report {
-    background-color: rgba(255, 255, 255, 0.2);
+.status-label.maintenance {
+    background-color: #fff3cd;
+    color: #856404;
 }
 
-/* Main content styling */
+.status-label.outofservice {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* ====== Navbar ====== */
+.logo {
+    color: #fff;
+}
+
+nav {
+    padding: 10px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1a75ff;
+    position: relative;
+    height: 70px;
+}
+
+nav ul {
+    display: flex;
+    gap: 30px;
+}
+
+nav ul li {
+    list-style: none;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 5px;
+}
+
+nav ul li a:hover {
+    background-color: #ffffff;
+    color: #1a75ff;
+}
+
+nav ul li a:focus {
+    background-color: white;
+    color: #1a75ff;
+}
+
+.menu-icon {
+    display: none;
+}
+
+.menu-icon i {
+    color: #fff;
+    font-size: 30px;
+}
+
+/* ====== Results Section ====== */
 .results-section {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1rem 2rem 2rem 2rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .map-container {
     width: 100%;
     aspect-ratio: 16/9;
     margin: 0 auto;
+    margin-bottom: 1rem;
 }
 
 .bowser-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
-    margin-top: 2rem;
+    margin-top: 0;
+    padding: 0;
 }
 
-.search-status {
-    margin: 10px 0;
+/* ====== Footer ====== */
+.footer-content {
+    background-color: #1a75ff;
+    color: white;
+    padding: 2rem 0;
     text-align: center;
+    margin-top: 2rem;
+    position: relative;
 }
 
-.alert-info {
-    background-color: #e3f2fd;
-    border: 1px solid #90caf9;
-    border-radius: 4px;
-    padding: 10px;
-    color: #1976d2;
+.social-icons a {
+    display: inline-block;
+    background-color: transparent;
+    border-radius: 50%;
+    padding: 8px;
+    transition: background-color 0.3s ease;
 }
 
-.fa-info-circle {
-    margin-right: 5px;
+.social-icons a:hover {
+    background-color: #ffffff;
+}
+
+.social-icons img {
+    width: 30px;
+    height: 30px;
+    display: block;
+}
+
+/* ====== FAQ Section ====== */
+.faq-modern {
+    max-width: 800px;
+    margin: 5rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.faq-title {
+    font-size: 2.2rem;
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.faq-item {
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+}
+
+.faq-item:hover {
+    box-shadow: 0 6px 18px rgba(0, 123, 255, 0.1);
+}
+
+.faq-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1.2rem 1.5rem;
+    text-align: left;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.3s, color 0.3s;
+}
+
+.faq-toggle:hover {
+    background-color: #f5faff;
+    color: #007bff;
+}
+
+.faq-toggle .icon {
+    font-size: 1.4rem;
+    transition: transform 0.3s;
+}
+
+.faq-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s;
+    background-color: #f9f9f9;
+    padding: 0 1.5rem;
+}
+
+.faq-item.active .faq-content {
+    padding: 1rem 1.5rem;
+    max-height: 200px;
+}
+
+.faq-item.active .faq-toggle .icon {
+    transform: rotate(45deg);
+}
+
+/* ====== Mobile/Tablet Fixes ====== */
+@media (max-width: 768px) {
+    #menuList {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.3s ease;
+    }
+
+    .search-container {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        border-radius: 12px;
+    }
+
+    .search-input-group {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .slider-container {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #eee;
+        padding: 1rem 0 0 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .search-btn {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    input {
+        width: 100%;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    nav ul {
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        text-align: center;
+        background-color: #004274;
+        overflow: hidden;
+        gap: 0;
+    }
+
+    nav ul li {
+        padding: 20px;
+    }
+
+    .menu-icon {
+        display: block;
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+
+   
 }
