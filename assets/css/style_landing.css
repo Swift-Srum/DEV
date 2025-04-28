@@ -587,6 +587,18 @@ nav ul li a:focus {
         transition: max-height 0.3s ease;
     }
 
+    nav .menu-icon img {
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+       
+      }
+      nav .menu-icon img:hover {
+        opacity: 0.7;
+        
+      }
+
     .search-container {
         flex-direction: column;
         align-items: stretch;
