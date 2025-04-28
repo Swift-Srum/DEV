@@ -73,7 +73,7 @@ $firstLong = $items[0]['longitude'] ?? '0.1246'; // Set a default value if longi
 </head>
 <body>
     <nav class="navbar">
-        <a href="/" class="navbar-brand">Swift Bowsers</a>
+        <a href="/" class="navbar-brand">Swift Bowserss</a>
         <div class="navbar-nav">
             <?php if ($loggedIn): ?>
                 <a href="/login/logout.php?session=<?= $sessionID ?>" class="nav-link">Logout</a>
