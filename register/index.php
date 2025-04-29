@@ -29,7 +29,7 @@ $_SESSION['captcha_answer'] = $firstNumber + $secondNumber;
     <!-- Left Section -->
     <div class="left-column">
         <h1>Join Us!</h1>
-        <p>Create your account to access exclusive features, offers, and rewards.</p>
+        <p>Create your account to view and manage your account and view bowsers.</p>
         <a href="/login">Already have an account? Login</a>
     </div>
 
