@@ -1,111 +1,216 @@
+/* General Reset */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-size: cover; 
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: #fff;
     margin: 0;
-    padding: 0;
-    color: #000;
+    font-family: 'Poppins', sans-serif;
+    background: #f2f2f2;
 }
 
-button {
-    background-color: #007bff;
-    width: 100%;
-    color: #ffffff;
-    padding: 15px;
-    margin: 10px 0;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
+/* Main container */
+#main {
+    display: flex;
+    min-height: 100vh;
+    flex-wrap: wrap;
 }
 
-label {
-    white-space: pre-wrap;
-	color: #ffffff;
+/* Left Column - Welcome Section */
+.left-column {
+    flex: 1;
+    background: linear-gradient(135deg, #4d9fff, #256eff);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 2rem;
+    min-height: 400px;
+    box-sizing: border-box;
+    opacity: 0; /* For animation */
+    animation: fadeSlideUp 1s ease forwards;
 }
 
+/* Left Column Text */
+.left-column h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.left-column p {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+    text-align: center;
+    max-width: 300px;
+}
+
+.left-column a {
+    color: white;
+    text-decoration: underline;
+    font-size: 0.95rem;
+}
+
+/* Right Column - Login Section */
+.right-column {
+    flex: 1;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 2rem;
+    min-height: 400px;
+    box-sizing: border-box;
+    opacity: 0; /* For animation */
+    animation: fadeSlideUp 1s ease forwards;
+    animation-delay: 0.2s;
+}
+
+/* Right Column Text */
+.right-column h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Form Styles */
 form {
-    border: 3px solid #007bff;
+    width: 100%;
     max-width: 400px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: #101210;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* ✅ Fixed here: input[type=text], input[type=password], input[type=email] */
-input[type=text],
-input[type=password],
-input[type=email] {
+form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+form input {
     width: 100%;
-    margin: 8px 0;
-    padding: 12px 15px;
-    display: inline-block;
-    border: 2px solid #003366;
-    box-sizing: border-box;
-    border-radius: 5px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #f9f9f9;
+    transition: border 0.3s;
 }
 
-button:hover {
-    opacity: 0.8;
+form input:focus {
+    border-color: #256eff;
+    outline: none;
 }
 
-textarea {
+/* Button Styles */
+form button {
     width: 100%;
-    margin: 8px 0;
-    padding: 12px 15px;
-    display: inline-block;
-    border: 2px solid #007bff;
-    box-sizing: border-box;
-    border-radius: 5px;
+    padding: 0.75rem;
+    background: #256eff;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    margin-top: 0.5rem;
 }
 
-.cancelbtn {
-    width: auto;
-    padding: 10px 18px;
-    margin: 10px 5px;
-    background-color: #007bff;
-    border-radius: 5px;
+form button:hover {
+    background: #1a53c7;
+    transform: translateY(-2px);
 }
 
-.container {
-    padding: 25px;
-    background-color: #101210;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+/* Action Links */
+.action-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
 }
 
-@media only screen and (max-width: 600px) {
-    form {
-        max-width: 100%;
+.action-links a {
+    font-size: 0.9rem;
+    color: #256eff;
+    text-decoration: none;
+}
+
+.action-links a:hover {
+    text-decoration: underline;
+}
+
+/* Animation Keyframes */
+@keyframes fadeSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-#main { 
-  width: 100%; 
-  height: 100vh; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+/* Responsive Design */
+@media (max-width: 768px) {
+    #main {
+        flex-direction: column;
+    }
 
-.left-column, .right-column {
-  width: 50%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-}
+    .left-column,
+    .right-column {
+        width: 100%;
+        flex: none;
+        min-height: auto;
+    }
 
-.left-column h1 {
-  margin-bottom: 20px;
-}
+    /* Smaller padding and font sizes for mobile */
+    .left-column {
+        margin-bottom: 2rem;
+        padding: 2rem 1.5rem;
+    }
 
-.right-column img {
-  max-width: 160%;
-  height: auto;
+    .left-column h1 {
+        font-size: 1.5rem;
+    }
+
+    .left-column p {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .right-column {
+        padding: 2rem 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        #main {
+            flex-direction: column;
+        }
+    
+        .left-column,
+        .right-column {
+            width: 100%;
+            flex: none;
+            min-height: auto;
+        }
+    
+        /* Smaller padding and font sizes for mobile */
+        .left-column {
+            margin-bottom: 2rem;
+            padding: 2rem 1.5rem;
+        }
+    
+        .left-column h1 {
+            font-size: 1.5rem; /* Slightly smaller heading */
+        }
+    
+        .left-column p {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            max-width: 90%; /* So paragraph text wraps nicer */
+            text-align: center;
+        }
+    
+        .right-column {
+            padding: 2rem 1.5rem;
+        }
+    }
+    
 }
