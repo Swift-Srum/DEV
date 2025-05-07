@@ -32,13 +32,18 @@ try {
     
     // Add to drivers tasks
     $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    $stmt = $db->prepare("INSERT INTO drivers_tasks (driver_id, area_report_id, bowser_id, status) VALUES (?, ?, ?, 'Driving')");
+    $stmt = $db->prepare("INSERT INTO drivers_tasks (driver_id, area_report_id, bowser_id, status) VALUES (?, ?, ?, 'Dispatch Requested')");
     $stmt->bind_param('iii', $driverId, $reportId, $bowser['id']);
     $stmt->execute();
     
-    // Update bowser status
-    $stmt = $db->prepare("UPDATE bowsers SET status_maintenance = 'Dispatched' WHERE id = ?");
+    // Update bowser status to 'Dispatch Requested'
+    $stmt = $db->prepare("UPDATE bowsers SET status_maintenance = 'Dispatch Requested' WHERE id = ?");
     $stmt->bind_param('i', $bowser['id']);
+    $stmt->execute();
+    
+    // Delete from drivers_tasks before deleting from area_reports
+    $stmt = $db->prepare("DELETE FROM drivers_tasks WHERE area_report_id = ?");
+    $stmt->bind_param('i', $reportId);
     $stmt->execute();
     
     // Delete from area reports
@@ -48,5 +53,7 @@ try {
     
     echo json_encode(['success' => true]);
 } catch (Exception $e) {
+    error_log("Error assigning driver: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
+?>

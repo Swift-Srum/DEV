@@ -47,9 +47,9 @@ foreach ($itemInfo as $item) {
     $name = $item['name'];
     $postcode = $item['postcode'];
     $details = $item['manufacturer_details'];
+    $capacity = $item['capacity']; // Add capacity to the variables
     $active = $item['active'];
-    
-    $status = $active ? "Available" : "Unavailable";
+    $statusMaintenance = $item['status_maintenance']; // Get status_maintenance from the database
 }
 
 // If item ID is null, redirect to main page
@@ -95,7 +95,8 @@ if (isset($_SESSION['feedback'])) {
             <h2><?php echo htmlspecialchars($name); ?></h2>
             <p><strong>Details:</strong> <?php echo htmlspecialchars($details); ?></p>
             <p><strong>Postcode:</strong> <?php echo htmlspecialchars($postcode); ?></p>
-            <p><strong>Status:</strong> <span class="status"><?php echo htmlspecialchars($status); ?></span></p>
+            <p><strong>Capacity:</strong> <?php echo htmlspecialchars($capacity); ?> L</p>
+            <p><strong>Status:</strong> <span class="status"><?php echo htmlspecialchars($statusMaintenance); ?></span></p>
         </div>
 
         <?php if ($loggedIn): ?>

@@ -78,9 +78,21 @@ $firstLong = $items[0]['longitude'] ?? '0.1246';
     <div class="logo"><h1>Swift Bowsers</h1></div>
     <ul id="menuList">
         <li><a href="/">Home</a></li>
-        <li><a href="/report/">Report Here</a></li>
+        <li><a href="/report/">Report Area</a></li>
         <li><a href="about.php">About Us</a></li>
         <li><a href="faq.php">FAQ</a></li>
+        <?php if ($isAdmin): ?>
+          <li><a href="admin/dashboard.php" class="nav-link">Admin Dashboard</a></li>
+        <?php endif; ?>
+        <?php if ($loggedIn && $userType === 'dispatcher'): ?>
+          <li><a href="/dispatcher/reported_areas.php" class="nav-link">Dispatcher Dashboard</a></li>
+        <?php endif; ?>
+        <?php if ($loggedIn && $userType === 'driver'): ?>
+          <li><a href="/driver/dashboard.php" class="nav-link">Driver Dashboard</a></li>
+        <?php endif; ?>
+        <?php if ($loggedIn && $userType === 'maintainer'): ?>
+          <li><a href="/maintainer/dashboard.php" class="nav-link">Maintainer Dashboard</a></li>
+        <?php endif; ?>
         <?php if ($loggedIn): ?>
             <li><a href="/login/logout.php?session=<?= $sessionID ?>">Logout</a></li>
         <?php else: ?>
@@ -157,13 +169,16 @@ $firstLong = $items[0]['longitude'] ?? '0.1246';
       ?>
       <div class="summary-card">
         <div class="summary-card-img">
-          <img src="/create-bowser/uploads/<?= $imgName ?>" alt="Bowser Image">
+          <img src="../create-bowser/uploads/<?php echo htmlspecialchars($imgName); ?>" 
+               alt="Bowser Image"
+               onerror="this.onerror=null; this.src='/assets/images/NOIMAGE.jpg';">
         </div>
         <div class="summary-card-content">
           <h3 class="summary-title"><?= $name ?></h3>
           <div class="summary-meta">📍 <?= $pc ?></div>
           <div class="summary-meta">
-            🔧 <span class="status-label <?= $cls ?>"><?= $status ?></span>
+            🔧 
+            <span class='status-label <?= $cls ?>'><?= htmlspecialchars($item['status_maintenance']) ?></span>
           </div>
           <a href="view?id=<?= $id ?>" class="summary-view-btn">View</a>
         </div>
@@ -200,7 +215,10 @@ $firstLong = $items[0]['longitude'] ?? '0.1246';
         <div class='popup-box $cls'>
           <div class='popup-row'><span class='popup-label'>👤 Name:</span> $name</div>
           <div class='popup-row'><span class='popup-label'>📍 Postcode:</span> $pc</div>
-          <div class='popup-row'><span class='popup-label'>📦 Status:</span> <span class='status-label'>$status</span></div>
+          <div class='popup-row'>
+            <span class='popup-label'>📦 Status:</span> 
+            <span class='status-label $cls'>".htmlspecialchars($item['status_maintenance'])."</span>
+          </div>
           <div class='popup-actions'>
             <a href='view?id=$id' class='popup-btn'>View</a>
             <a href='https://www.google.com/maps/dir/?api=1&destination=$lat,$lon' target='_blank' class='popup-btn directions-btn'>Get Directions</a>
@@ -260,3 +278,4 @@ $firstLong = $items[0]['longitude'] ?? '0.1246';
 
 </body>
 </html>
+

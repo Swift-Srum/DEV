@@ -29,14 +29,25 @@ try {
         throw new Exception("Connection failed: " . $db->connect_error);
     }
 
-    // Always delete from area_reports since this file is specifically for areas
+    // Delete from drivers_tasks first to avoid foreign key constraint issues
+    $stmt = $db->prepare("DELETE FROM drivers_tasks WHERE area_report_id = ?");
+    if (!$stmt) {
+        throw new Exception("Prepare failed: " . $db->error);
+    }
+
+    $stmt->bind_param('i', $reportId);
+    if (!$stmt->execute()) {
+        throw new Exception("Execute failed: " . $stmt->error);
+    }
+    $stmt->close();
+
+    // Delete from area_reports
     $stmt = $db->prepare("DELETE FROM area_reports WHERE id = ?");
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $db->error);
     }
 
     $stmt->bind_param('i', $reportId);
-    
     if (!$stmt->execute()) {
         throw new Exception("Execute failed: " . $stmt->error);
     }

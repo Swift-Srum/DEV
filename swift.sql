@@ -99,7 +99,8 @@ CREATE TABLE `bowsers` (
     'Maintenance Requested',
     'Under Maintenance',
     'Ready',
-    'Out of Service'
+    'Out of Service',
+    'Dispatch Requested'
   ) DEFAULT 'On Depot'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -388,7 +389,7 @@ ALTER TABLE `uploads`
 ALTER TABLE `maintain_bowser`
   DROP COLUMN `status`;
 
--- Update the bowsers.status_maintenance ENUM to use clearer, more relevant statuses
+-- Update the bowsers.status_maintenance ENUM to include 'Dispatch Requested'
 ALTER TABLE `bowsers`
   MODIFY `status_maintenance` ENUM(
     'On Depot',
@@ -397,7 +398,8 @@ ALTER TABLE `bowsers`
     'Maintenance Requested',
     'Under Maintenance',
     'Ready',
-    'Out of Service'
+    'Out of Service',
+    'Dispatch Requested'
   ) DEFAULT 'On Depot';
 
 COMMIT;
