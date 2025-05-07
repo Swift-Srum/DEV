@@ -223,12 +223,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $bowserId = $task['bowser_id'];
                 
-                // Reset bowser status if one was assigned
-                if ($bowserId) {
-                    $stmt = $db->prepare("UPDATE bowsers SET status_maintenance = 'On Depot' WHERE id = ?");
-                    $stmt->bind_param('i', $bowserId);
-                    $stmt->execute();
-                }
                 
                 // Delete the task
                 $stmt = $db->prepare("DELETE FROM drivers_tasks WHERE id = ?");
