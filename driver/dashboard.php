@@ -28,7 +28,7 @@ $userId = $user['id'];
 // Replace the original task query with a join query to get destination and bowser name
 $query = "SELECT dt.*, ar.postcode AS destination, b.name AS bowser_name 
           FROM drivers_tasks dt 
-          LEFT JOIN area_reports ar ON dt.area_report_id = ar.id 
+          LEFT JOIN assigned_area_reports ar ON dt.area_report_id = ar.id 
           LEFT JOIN bowsers b ON dt.bowser_id = b.id 
           WHERE dt.driver_id = ?";
 $stmt = $db->prepare($query);

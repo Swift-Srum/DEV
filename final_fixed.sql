@@ -39,6 +39,22 @@ CREATE TABLE `area_reports` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
+-- Table structure for `assigned_area_reports`
+-- --------------------------------------------------------
+
+CREATE TABLE `assigned_area_reports` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `report` text NOT NULL,
+  `postcode` text NOT NULL,
+  `reportType` text NOT NULL,
+  `userId` int(11) NOT NULL,
+  `assigned_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `userId` (`userId`),
+  CONSTRAINT `assigned_area_reports_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 -- Table structure for `bowsers`
 -- --------------------------------------------------------
 
@@ -140,16 +156,18 @@ CREATE TABLE `verification_codes` (
 -- Table structure for `drivers_tasks`
 -- --------------------------------------------------------
 
+DROP TABLE IF EXISTS `drivers_tasks`;
+
 CREATE TABLE `drivers_tasks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `driver_id` int(11) NOT NULL,
-  `area_report_id` int(11) NOT NULL,
+  `area_report_id` int(11) NOT NULL, -- Now references `assigned_area_reports`
   `bowser_id` int(11) NOT NULL,
   `status` ENUM('Driving', 'On Depot') DEFAULT 'On Depot',
   `assigned_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`driver_id`) REFERENCES `users` (`id`),
-  FOREIGN KEY (`area_report_id`) REFERENCES `area_reports` (`id`),
+  FOREIGN KEY (`area_report_id`) REFERENCES `assigned_area_reports` (`id`), -- Updated foreign key
   FOREIGN KEY (`bowser_id`) REFERENCES `bowsers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

@@ -29,28 +29,34 @@ try {
         echo json_encode(['success' => false, 'message' => 'No available bowsers']);
         exit();
     }
-    
-    // Add to drivers tasks
+
     $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    $stmt = $db->prepare("INSERT INTO drivers_tasks (driver_id, area_report_id, bowser_id, status) VALUES (?, ?, ?, 'Dispatch Requested')");
-    $stmt->bind_param('iii', $driverId, $reportId, $bowser['id']);
+
+    // Add to assigned_area_reports
+    $stmt = $db->prepare("INSERT INTO assigned_area_reports (report, postcode, reportType, userId, assigned_date) 
+                           SELECT report, postcode, reportType, userId, NOW() 
+                           FROM area_reports WHERE id = ?");
+    $stmt->bind_param('i', $reportId);
     $stmt->execute();
-    
+
+    // Get the inserted report's ID from assigned_area_reports
+    $assignedReportId = $db->insert_id;
+
+    // Add to drivers_tasks using the assigned_area_reports ID
+    $stmt = $db->prepare("INSERT INTO drivers_tasks (driver_id, area_report_id, bowser_id, status) VALUES (?, ?, ?, 'Dispatch Requested')");
+    $stmt->bind_param('iii', $driverId, $assignedReportId, $bowser['id']);
+    $stmt->execute();
+
     // Update bowser status to 'Dispatch Requested'
     $stmt = $db->prepare("UPDATE bowsers SET status_maintenance = 'Dispatch Requested' WHERE id = ?");
     $stmt->bind_param('i', $bowser['id']);
     $stmt->execute();
-    
-    // Delete from drivers_tasks before deleting from area_reports
-    $stmt = $db->prepare("DELETE FROM drivers_tasks WHERE area_report_id = ?");
-    $stmt->bind_param('i', $reportId);
-    $stmt->execute();
-    
-    // Delete from area reports
+
+    // Delete from area_reports
     $stmt = $db->prepare("DELETE FROM area_reports WHERE id = ?");
     $stmt->bind_param('i', $reportId);
     $stmt->execute();
-    
+
     echo json_encode(['success' => true]);
 } catch (Exception $e) {
     error_log("Error assigning driver: " . $e->getMessage());

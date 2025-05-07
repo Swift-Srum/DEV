@@ -41,11 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $db->begin_transaction();
                 
-                // Get destination postcode from area_report associated with this task
+                // Get destination postcode from assigned_area_reports associated with this task
                 $stmt = $db->prepare("
                     SELECT ar.postcode 
                     FROM drivers_tasks dt 
-                    LEFT JOIN area_reports ar ON dt.area_report_id = ar.id 
+                    LEFT JOIN assigned_area_reports ar ON dt.area_report_id = ar.id 
                     WHERE dt.id = ?
                 ");
                 $stmt->bind_param('i', $taskId);
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $db->prepare("
                     SELECT dt.bowser_id, ar.postcode 
                     FROM drivers_tasks dt 
-                    LEFT JOIN area_reports ar ON dt.area_report_id = ar.id 
+                    LEFT JOIN assigned_area_reports ar ON dt.area_report_id = ar.id 
                     WHERE dt.id = ?
                 ");
                 $stmt->bind_param('i', $taskId);
