@@ -148,13 +148,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             try {
+                $db->begin_transaction();
+
                 // Update the bowser status
                 $stmt = $db->prepare("UPDATE bowsers SET status_maintenance = ? WHERE id = ?");
                 $stmt->bind_param('si', $status, $bowserId);
                 $stmt->execute();
-                
+
+                // If the status is "Dispatched," update the bowser's postcode and geolocation
+                if ($status === 'Dispatched') {
+                    $stmt = $db->prepare("
+                        SELECT ar.postcode 
+                        FROM drivers_tasks dt 
+                        LEFT JOIN assigned_area_reports ar ON dt.area_report_id = ar.id 
+                        WHERE dt.id = ?
+                    ");
+                    $stmt->bind_param('i', $taskId);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $taskData = $result->fetch_assoc();
+
+                    if (!$taskData || !$taskData['postcode']) {
+                        throw new Exception('Task has no valid destination postcode');
+                    }
+
+                    $destinationPostcode = $taskData['postcode'];
+
+                    // Fetch geolocation data using the postcode
+                    $eastings = $northings = $longitude = $latitude = null;
+                    $url = "https://api.postcodes.io/postcodes/$destinationPostcode";
+                    $response = file_get_contents($url);
+                    $data = json_decode($response, true);
+
+                    if (isset($data['result'])) {
+                        $eastings = $data['result']['eastings'];
+                        $northings = $data['result']['northings'];
+                        $longitude = $data['result']['longitude'];
+                        $latitude = $data['result']['latitude'];
+                    }
+
+                    if (!empty($eastings) && !empty($northings) && !empty($longitude) && !empty($latitude)) {
+                        // Update the bowser's postcode and geolocation data
+                        $stmt = $db->prepare("UPDATE bowsers SET postcode = ?, eastings = ?, northings = ?, longitude = ?, latitude = ? WHERE id = ?");
+                        $stmt->bind_param('sdddsi', $destinationPostcode, $eastings, $northings, $longitude, $latitude, $bowserId);
+                        $stmt->execute();
+                    } else {
+                        throw new Exception('Failed to fetch geolocation data for the postcode');
+                    }
+                }
+
+                $db->commit();
                 echo json_encode(['success' => true]);
             } catch (Exception $e) {
+                $db->rollback();
                 echo json_encode(['success' => false, 'message' => $e->getMessage()]);
             }
             break;
