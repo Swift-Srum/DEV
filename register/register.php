@@ -1,7 +1,7 @@
 <?php
-session_start(); // Required for captcha
+session_start(); 
 
-// Setting error reporting to suppress errors
+
 error_reporting(0);
 
 // Including necessary files

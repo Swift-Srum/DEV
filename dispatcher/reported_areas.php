@@ -46,6 +46,7 @@ include('../essential/header.php');
         </div>
 
         <!-- Reports Count -->
+        
         <div class="reports-count">
             Total Reports: <?= count($reports) ?>
         </div>

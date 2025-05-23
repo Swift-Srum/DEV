@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["fileToUpload"])) {
                 $stmt->bind_param("si", $fileName, $itemId);
 
                 if ($stmt->execute()) {
-                    echo "responseCode=1"; // Success response
+                    echo "responseCode=1"; 
                 } else {
                     echo "Error: Failed to insert file information into the database.";
                 }

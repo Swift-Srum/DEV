@@ -211,29 +211,29 @@ function submitForm() {
     fetch("./submit.php", {
         method: "POST",
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded", // This tells the server it's URL-encoded data
+            "Content-Type": "application/x-www-form-urlencoded", 
         },
-        body: params.toString(), // Convert URLSearchParams to query string
+        body: params.toString(), 
     })
     .then(response => {
-      // Check if the response is a redirect
+      
       if (response.redirected) {
-        // If redirected, get the new location
+       
         const redirectLocation = response.url;
 
-        // Redirect the user to the specified location
+        
         window.location.href = redirectLocation;
       } else {
-        // Handle other aspects of the response if needed
+        
         if (response.ok) {
-          return response.text(); // or response.json() if expecting JSON
+          return response.text(); 
         } else {
           throw new Error(`Failed with status: ${response.status}`);
         }
       }
     })
     .then(data => {
-        console.log(data); // Log the response from the server
+        console.log(data); 
 
         // File upload part
         const fileInput = document.getElementById("fileToUpload");

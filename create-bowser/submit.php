@@ -32,7 +32,7 @@ if ($loggedIn === false) {
     die("Error: User not logged in");
 }
 
-// Retrieving user ID
+
 $idx = getUserID();
 
 // Debugging: Check if getUserID function works correctly
@@ -87,12 +87,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo 'created';
 		header("Location: ../create-bowser/?err=" . urlencode($aes->encrypt("Bowser created successfully!", "secretkey")));
     } else {
-        // If any required field is empty, return error response and redirect with error message
+        
         echo 'Empty Fields';
         header("Location: ../create-bowser/?err=" . urlencode($aes->encrypt("Please fill out all fields, and make sure the postcode is correct", "secretkey")));
-        exit(); // Exit script after redirection
+        exit(); 
     }
 } else {
-    echo 'responseCode=999'; // If not POST request, return error code
+    echo 'responseCode=999'; 
 }
 ?>

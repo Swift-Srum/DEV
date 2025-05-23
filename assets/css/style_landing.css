@@ -1,4 +1,4 @@
-/* ====== Global Styles ====== */
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -7,7 +7,7 @@ body {
     text-align: center;
 }
 
-/* ====== Header Section ====== */
+
 header {
     background: #fff;
     padding: 20px;
@@ -15,7 +15,7 @@ header {
     margin-bottom: 10px;
 }
 
-/* ====== Buttons ====== */
+
 .report-btn, .search-btn {
     background-color: #007bff;
     color: #fff;
@@ -30,7 +30,7 @@ header {
     background-color: #0056b3;
 }
 
-/* ====== Search Section ====== */
+
 .search-section {
     background: #fff;
     padding: 20px;
@@ -53,7 +53,7 @@ input {
     width: 60%;
 }
 
-/* ====== Main Image ====== */
+
 .main-image img {
     width: 80%;
     margin: 20px 0;
@@ -61,7 +61,7 @@ input {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* ====== Clean Summary Card Style ====== */
+
 .summary-card {
     background: white;
     border-radius: 10px;
@@ -166,7 +166,7 @@ input {
     background-color: #3700b3;
 }
 
-/* ====== Responsive Images ====== */
+
 .responsive-img {
     max-width: 300px;
     max-height: 300px;
@@ -176,7 +176,6 @@ input {
     margin: 0 auto;
 }
 
-/* ====== Map Styling ====== */
 #map {
     width: 100%;
     height: 500px;
@@ -204,7 +203,7 @@ input {
     background-color: #0056b3;
 }
 
-/* ====== Top Right Button Group ====== */
+
 .btn-group {
     position: fixed;
     top: 20px;
@@ -242,7 +241,7 @@ input {
     background-color: #3700b3;
 }
 
-/* ====== Hero Section ====== */
+
 .hero {
     padding: 2rem 2rem;
     text-align: center;
@@ -256,7 +255,7 @@ input {
     line-height: 1.2;
 }
 
-/* ====== Search Container ====== */
+
 .search-container {
     background: white;
     border-radius: 50px;
@@ -313,7 +312,7 @@ input {
     background-color: #006C46;
 }
 
-/* Modern Leaflet Popup Styling */
+
 .leaflet-popup-content-wrapper {
     background-color: #fff;
     border-radius: 12px;
@@ -395,7 +394,7 @@ input {
     color: #721c24;
 }
 
-/* ====== Navbar ====== */
+
 .logo {
     color: #fff;
 }
@@ -446,7 +445,7 @@ nav ul li a:focus {
     font-size: 30px;
 }
 
-/* ====== Results Section ====== */
+
 .results-section {
     max-width: 1200px;
     margin: 0 auto;
@@ -471,7 +470,7 @@ nav ul li a:focus {
     padding: 0;
 }
 
-/* ====== Footer ====== */
+
 .footer-content {
     background-color: #1a75ff;
     color: white;
@@ -499,7 +498,7 @@ nav ul li a:focus {
     display: block;
 }
 
-/* ====== FAQ Section ====== */
+
 .faq-modern {
     max-width: 800px;
     margin: 5rem auto;
@@ -577,7 +576,7 @@ nav ul li a:focus {
     transform: rotate(45deg);
 }
 
-/* ====== Mobile/Tablet Fixes ====== */
+
 @media (max-width: 768px) {
     #menuList {
         display: flex;

@@ -1,5 +1,5 @@
 <?php
-// Set error reporting level to report all errors except E_NOTICE
+
 error_reporting(1);
 
 // Include necessary files

@@ -40,11 +40,11 @@ form {
     max-width: 700px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #ffffff;  /* Changed from #101210 to white */
+    background-color: #ffffff;  
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     animation: slideUp 1s ease-in;
-    color: #333333;  /* Added to ensure text is dark */
+    color: #333333;  
 }
 
 input[type=text],
@@ -78,11 +78,11 @@ textarea {
 
 .container {
     padding: 25px;
-    background-color: #ffffff;  /* Changed from #101210 to white */
+    background-color: #ffffff;  
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     animation: fadeIn 1.5s ease-in;
-    color: #333333;  /* Added to ensure text is dark */
+    color: #333333;  
 }
 
 .dashboard-container {
@@ -185,7 +185,7 @@ textarea {
     color: #333333;
 }
 
-/* Add these styles to your existing CSS file */
+
 .maintenance-table {
     width: 100%;
     border-collapse: collapse;
@@ -233,7 +233,7 @@ textarea {
     background-color: #0056b3;
 }
 
-/* Media query for screens with a maximum width of 600 pixels (typical for mobile devices) */
+
 @media only screen and (max-width: 600px) {
     form {
         max-width: 100%;

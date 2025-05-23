@@ -25,7 +25,7 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $userId = $user['id'];
 
-// Replace the original task query with a join query to get destination and bowser name
+
 $query = "SELECT dt.*, ar.postcode AS destination, b.name AS bowser_name 
           FROM drivers_tasks dt 
           LEFT JOIN assigned_area_reports ar ON dt.area_report_id = ar.id 

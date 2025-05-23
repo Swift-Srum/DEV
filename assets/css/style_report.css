@@ -1,4 +1,4 @@
-/* General body styling */
+
 body {
     margin: 0;
     padding: 0;
@@ -10,7 +10,7 @@ body {
     min-height: 100vh;
 }
 
-/* Header styling - removing blue box and changing to black text */
+
 header {
     background-color: transparent;
     margin: 40px 0;
@@ -26,15 +26,15 @@ header h1 {
     margin: 0;
 }
 
-/* Report options container */
+
 .report-options {
     margin-top: 20px;
     display: flex;
     justify-content: center;
-    gap: 15px; /* Space between buttons */
+    gap: 15px; 
 }
 
-/* Button styling */
+
 .report-btn {
     background-color: #007bff;
     color: white;
@@ -52,7 +52,7 @@ header h1 {
     background-color: #0056b3;
 }
 
-/* Form container styling - making it wider and more spacious */
+
 #formContainer {
     width: 80%;
     max-width: 800px;
@@ -63,14 +63,14 @@ header h1 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Form styling */
+
 form {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-/* Label styling */
+
 label {
     font-weight: 500;
     font-size: 1.1rem;
@@ -78,7 +78,7 @@ label {
     margin-bottom: 0.5rem;
 }
 
-/* Input and textarea styling */
+
 input[type="text"],
 textarea,
 select {
@@ -95,7 +95,7 @@ textarea {
     resize: vertical;
 }
 
-/* Alert styling */
+
 .alert {
     padding: 1rem;
     margin-bottom: 1rem;
@@ -117,14 +117,14 @@ textarea {
     padding: 10px;
 }
 
-/* Feedback message styling */
+
 .feedback-message {
     margin: 20px 0;
     padding: 10px;
     border-radius: 4px;
 }
 
-/* Submit button styling */
+
 .submit-btn {
     background-color: #007bff;
     color: white;
@@ -138,7 +138,7 @@ textarea {
     background-color: #0056b3;
 }
 
-/* Responsive design */
+
 @media (max-width: 768px) {
     #formContainer {
         width: 90%;

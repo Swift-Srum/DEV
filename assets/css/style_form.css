@@ -1,18 +1,18 @@
-/* General Reset */
+
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
     background: #f2f2f2;
 }
 
-/* Main container */
+
 #main {
     display: flex;
     min-height: 100vh;
     flex-wrap: wrap;
 }
 
-/* Left Column - Welcome Section */
+
 .left-column {
     flex: 1;
     background: linear-gradient(135deg, #4d9fff, #256eff);
@@ -24,11 +24,11 @@ body {
     padding: 3rem 2rem;
     min-height: 400px;
     box-sizing: border-box;
-    opacity: 0; /* For animation */
+    opacity: 0; 
     animation: fadeSlideUp 1s ease forwards;
 }
 
-/* Left Column Text */
+
 .left-column h1 {
     font-size: 2rem;
     margin-bottom: 1rem;
@@ -48,7 +48,7 @@ body {
     font-size: 0.95rem;
 }
 
-/* Right Column - Login Section */
+
 .right-column {
     flex: 1;
     background: #ffffff;
@@ -58,19 +58,19 @@ body {
     padding: 3rem 2rem;
     min-height: 400px;
     box-sizing: border-box;
-    opacity: 0; /* For animation */
+    opacity: 0; 
     animation: fadeSlideUp 1s ease forwards;
     animation-delay: 0.2s;
 }
 
-/* Right Column Text */
+
 .right-column h1 {
     font-size: 2rem;
     margin-bottom: 1.5rem;
     text-align: center;
 }
 
-/* Form Styles */
+
 form {
     width: 100%;
     max-width: 400px;
@@ -98,7 +98,7 @@ form input:focus {
     outline: none;
 }
 
-/* Button Styles */
+
 form button {
     width: 100%;
     padding: 0.75rem;
@@ -118,7 +118,7 @@ form button:hover {
     transform: translateY(-2px);
 }
 
-/* Action Links */
+
 .action-links {
     display: flex;
     justify-content: space-between;
@@ -135,7 +135,7 @@ form button:hover {
     text-decoration: underline;
 }
 
-/* Animation Keyframes */
+
 @keyframes fadeSlideUp {
     0% {
         opacity: 0;
@@ -147,7 +147,7 @@ form button:hover {
     }
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
     #main {
         flex-direction: column;
@@ -160,7 +160,7 @@ form button:hover {
         min-height: auto;
     }
 
-    /* Smaller padding and font sizes for mobile */
+    
     .left-column {
         margin-bottom: 2rem;
         padding: 2rem 1.5rem;
@@ -191,20 +191,20 @@ form button:hover {
             min-height: auto;
         }
     
-        /* Smaller padding and font sizes for mobile */
+       
         .left-column {
             margin-bottom: 2rem;
             padding: 2rem 1.5rem;
         }
     
         .left-column h1 {
-            font-size: 1.5rem; /* Slightly smaller heading */
+            font-size: 1.5rem; 
         }
     
         .left-column p {
             font-size: 0.95rem;
             margin-bottom: 1.5rem;
-            max-width: 90%; /* So paragraph text wraps nicer */
+            max-width: 90%; 
             text-align: center;
         }
     
