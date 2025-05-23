@@ -103,7 +103,7 @@ function assignToDriver(reportId) {
         if (data.success) {
             location.reload();
         } else {
-            alert('Error assigning driver');
+            alert('No available drivers');
         }
     });
 }

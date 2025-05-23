@@ -208,27 +208,38 @@ $firstLong = $items[0]['longitude'] ?? '0.1246';
 
   // Build and add markers
   var locations = [
-    <?php foreach ($items as $item):
+    <?php 
+    $first = true;
+    foreach ($items as $item):
       $lat   = floatval($item['latitude']);
       $lon   = floatval($item['longitude']);
-      $label = addslashes("
-        <div class='popup-box $cls'>
-          <div class='popup-row'><span class='popup-label'>👤 Name:</span> $name</div>
-          <div class='popup-row'><span class='popup-label'>📍 Postcode:</span> $pc</div>
-          <div class='popup-row'>
-            <span class='popup-label'>📦 Status:</span> 
-            <span class='status-label $cls'>".htmlspecialchars($item['status_maintenance'])."</span>
-          </div>
-          <div class='popup-actions'>
-            <a href='view?id=$id' class='popup-btn'>View</a>
-            <a href='https://www.google.com/maps/dir/?api=1&destination=$lat,$lon' target='_blank' class='popup-btn directions-btn'>Get Directions</a>
-          </div>
-        </div>
-      ");
+      $name  = addslashes(htmlspecialchars($item['name']));
+      $pc    = addslashes(htmlspecialchars($item['postcode']));
+      $status = addslashes(htmlspecialchars($item['status_maintenance']));
+      
+      // Only add comma if not the first item
+      if (!$first) echo ",";
+      else $first = false;
     ?>
-    ,{ lat: <?= $lat ?>, lon: <?= $lon ?>, label: `<?= $label ?>` }
+    {
+      lat: <?= $lat ?>, 
+      lon: <?= $lon ?>, 
+      label: `<div class='popup-box <?= $cls ?>'>
+        <div class='popup-row'><span class='popup-label'>👤 Name:</span> <?= $name ?></div>
+        <div class='popup-row'><span class='popup-label'>📍 Postcode:</span> <?= $pc ?></div>
+        <div class='popup-row'>
+          <span class='popup-label'>📦 Status:</span> 
+          <span class='status-label <?= $cls ?>'><?= $status ?></span>
+        </div>
+        <div class='popup-actions'>
+          <a href='view?id=<?= $id ?>' class='popup-btn'>View</a>
+          <a href='https://www.google.com/maps/dir/?api=1&destination=<?= $lat ?>,<?= $lon ?>' target='_blank' class='popup-btn directions-btn'>Get Directions</a>
+        </div>
+      </div>`
+    }
     <?php endforeach; ?>
   ];
+
   locations.forEach(loc => {
     L.marker([loc.lat, loc.lon]).addTo(map).bindPopup(loc.label);
   });

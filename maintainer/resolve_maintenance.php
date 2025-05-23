@@ -28,10 +28,10 @@ try {
     // Start transaction
     $db->begin_transaction();
 
-    // Update bowser status to 'Ready'
+    // Update bowser status to 'Dispatched'
     $updateBowserQuery = "UPDATE bowsers b 
                          JOIN maintain_bowser mb ON b.id = mb.bowserId 
-                         SET b.status_maintenance = 'Ready' 
+                         SET b.status_maintenance = 'Dispatched' 
                          WHERE mb.id = ?";
     $stmt = $db->prepare($updateBowserQuery);
     $stmt->bind_param('i', $maintenanceId);
